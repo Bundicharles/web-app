@@ -1,0 +1,569 @@
+/* Reset and Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Import a more classic font */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:wght@400;700&family=Roboto:wght@400&display=swap');
+
+body {
+    background-color: #D7BDA6; /* Vanilla - a soft, warm background */
+    color: #403208; /* Espresso - a rich, dark text color */
+    line-height: 1.8;
+    font-family: 'Lora', serif; /* Classic serif font for body text */
+}
+
+/* Header */
+header {
+    background-color: #A87343; /* Caramel - warm and inviting */
+    padding: 1rem 2rem; /* Reduced vertical padding from 1.5rem to 1rem for a narrower navbar */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #6D3914; /* Coffee - a subtle, rich border */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.logo {
+    max-width: 150px; /* Slightly reduced logo size to match the narrower header */
+    height: auto;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin-right: 2rem;
+}
+
+.nav-links li {
+    margin: 0 1.5rem;
+}
+
+.nav-links a {
+    color: #D7BDA6; /* Vanilla - light and elegant */
+    text-decoration: none;
+    font-family: 'Playfair Display', serif; /* Elegant font for nav */
+    font-size: 1.1rem;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #B7957F; /* Almond - a soft hover effect */
+    text-decoration: underline;
+}
+
+.auth-buttons {
+    display: block;
+}
+
+.auth-buttons button {
+    background-color: #6D3914; /* Coffee - a deep, rich button color */
+    color: #D7BDA6; /* Vanilla - light text */
+    border: 1px solid #403208; /* Espresso - subtle border */
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 1rem;
+    font-family: 'Playfair Display', serif;
+    transition: background-color 0.3s ease;
+}
+
+.auth-buttons button:hover {
+    background-color: #403208; /* Espresso - darker on hover */
+}
+
+.profile {
+    position: relative;
+    display: none; /* Hidden by default, shown if logged in */
+}
+
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #D7BDA6; /* Vanilla border */
+    cursor: pointer;
+}
+
+.profile-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: #A87343; /* Caramel - warm dropdown */
+    border: 1px solid #6D3914; /* Coffee - subtle border */
+    border-radius: 5px;
+    padding: 0.5rem;
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.profile-menu a {
+    display: block;
+    color: #D7BDA6; /* Vanilla - light text */
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    font-family: 'Lora', serif;
+    transition: background-color 0.3s ease;
+}
+
+.profile-menu a:hover {
+    background-color: #6D3914; /* Coffee - darker hover */
+}
+
+/* Hero Section */
+.hero {
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.hero-image {
+    width: 100%;
+    height: 300px; /* Taller hero for a more dramatic effect */
+    object-fit: cover;
+    filter: brightness(0.8); /* Slightly darkened for elegance */
+}
+
+/* Main Container */
+.container {
+    max-width: 80%; /* Adjusted to 80% to make the blog section take up 80% of the webpage */
+    width: 100%; /* Ensures it scales dynamically */
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    background-color: #F5F5F5; /* Off-white for a clean content area */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+h1 {
+    color: #403208; /* Espresso - rich heading color */
+    margin-bottom: 1.5rem;
+    font-size: 3rem;
+    font-family: 'Playfair Display', serif; /* Elegant heading font */
+    font-weight: 700;
+    text-align: center;
+}
+
+h2 {
+    color: #6D3914; /* Coffee - warm secondary heading */
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-family: 'Playfair Display', serif;
+}
+
+h3 {
+    color: #A87343; /* Caramel - warm accent for smaller headings */
+    margin-bottom: 1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Blog Grid */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Adjusted min width to 350px for better fit within 80% container */
+    gap: 2rem; /* Reduced gap slightly for better spacing within the 80% width */
+    padding: 0 1rem; /* Add some padding to prevent cards from touching the container edges */
+}
+
+.blog-card {
+    background-color: #D7BDA6; /* Vanilla - soft card background */
+    padding: 1.5rem; /* Reduced padding slightly to fit more content */
+    border-radius: 10px;
+    border: 1px solid #B7957F; /* Almond - subtle border */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.blog-card h3 a {
+    color: #403208; /* Espresso - rich link color */
+    text-decoration: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; /* Slightly smaller for better fit */
+}
+
+.blog-card h3 a:hover {
+    color: #6D3914; /* Coffee - darker hover */
+    text-decoration: underline;
+}
+
+.blog-card p {
+    color: #403208; /* Espresso - readable text */
+    font-size: 0.95rem; /* Slightly smaller for better fit */
+    margin-top: 0.75rem;
+    font-family: 'Lora', serif;
+}
+
+.metrics {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #6D3914; /* Coffee - subtle metrics */
+    font-family: 'Roboto', sans-serif;
+}
+
+.metrics span {
+    margin-right: 1rem;
+}
+
+/* Create Form */
+.create-form, .auth-form, .comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #D7BDA6; /* Vanilla - warm form background */
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid #B7957F; /* Almond - subtle border */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    color: #403208; /* Espresso - readable label */
+    font-family: 'Playfair Display', serif;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="file"],
+.form-group select,
+.form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #B7957F; /* Almond - soft border */
+    border-radius: 5px;
+    background-color: #F5F5F5; /* Off-white input background */
+    color: #403208; /* Espresso - text color */
+    width: 100%;
+    font-family: 'Lora', serif;
+}
+
+#editor {
+    border: 1px solid #B7957F; /* Almond - editor border */
+    border-radius: 5px;
+    background-color: #F5F5F5;
+}
+
+.submit-btn {
+    background-color: #6D3914; /* Coffee - rich button color */
+    color: #D7BDA6; /* Vanilla - light text */
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start;
+    font-family: 'Playfair Display', serif;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #403208; /* Espresso - darker hover */
+}
+
+.back-link {
+    color: #A87343; /* Caramel - warm link color */
+    text-decoration: none;
+    margin-top: 1rem;
+    display: inline-block;
+    font-family: 'Lora', serif;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+    color: #6D3914; /* Coffee - darker hover */
+}
+
+/* Blog Detail */
+.blog-detail {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #D7BDA6; /* Vanilla - warm background */
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid #B7957F; /* Almond - subtle border */
+    text-align: left; /* Override any centering, align text to the left */
+}
+
+.blog-detail h1 {
+    text-align: left; /* Ensure the title is left-aligned */
+    font-size: 2.5rem; /* Slightly smaller for better proportion */
+    margin-bottom: 1rem;
+    color: #403208; /* Espresso - rich heading color */
+    font-family: 'Playfair Display', serif;
+}
+
+.blog-detail .author-info {
+    text-align: left; /* Left-align author info */
+    font-size: 0.9rem;
+    color: #6D3914; /* Coffee - subtle color */
+    margin-bottom: 1.5rem;
+    font-family: 'Roboto', sans-serif;
+}
+
+.blog-detail img {
+    width: 100%; /* Make the image span the full width of the container */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 400px; /* Limit the height to avoid overly tall images */
+    object-fit: cover; /* Ensure the image scales nicely */
+    border-radius: 5px; /* Add a slight border radius for elegance */
+    margin: 1.5rem 0; /* Add spacing above and below the image */
+}
+
+.blog-detail p {
+    text-align: left; /* Ensure body text is left-aligned */
+    color: #403208; /* Espresso - readable text */
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    font-family: 'Lora', serif;
+}
+
+.blog-detail .metrics {
+    text-align: left; /* Left-align metrics */
+    font-size: 0.9rem;
+    color: #6D3914; /* Coffee - subtle metrics */
+    font-family: 'Roboto', sans-serif;
+    margin-top: 1rem;
+}
+
+.blog-actions {
+    text-align: left; /* Left-align any action buttons */
+}
+
+.blog-actions button {
+    margin-top: 1rem;
+    padding: 0.5rem 1.5rem;
+    background-color: #6D3914; /* Coffee - button color */
+    color: #D7BDA6; /* Vanilla - text */
+    border: none;
+    border-radius: 5px;
+    font-family: 'Playfair Display', serif;
+}
+
+.comment-form {
+    margin-top: 2rem;
+}
+
+.comment-form textarea {
+    height: 120px;
+    resize: vertical;
+}
+.comment {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #F5F5F5; /* Off-white background for comments */
+    border-radius: 5px;
+    border: 1px solid #B7957F; /* Almond - subtle border */
+}
+
+.comment .comment-author {
+    font-weight: bold;
+    color: #403208; /* Espresso - rich text color */
+    font-family: 'Roboto', sans-serif;
+}
+
+.comment .comment-date {
+    font-size: 0.9rem;
+    color: #6D3914; /* Coffee - subtle color */
+    font-family: 'Roboto', sans-serif;
+}
+
+.comment .comment-content {
+    margin-top: 0.5rem;
+    color: #403208;
+    font-family: 'Lora', serif;
+}
+
+/* Reply Button */
+.reply-btn {
+    background-color: transparent;
+    color: #A87343; /* Caramel - warm link color */
+    border: none;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: inline-block;
+}
+
+.reply-btn:hover {
+    color: #6D3914; /* Coffee - darker hover */
+    text-decoration: underline;
+}
+
+/* Nested Replies */
+.comment .replies {
+    margin-top: 1rem;
+    margin-left: 2rem; /* Indent replies */
+}
+
+.comment .replies .comment {
+    background-color: #EDE4DB; /* Slightly darker background for replies */
+    border: 1px solid #A87343; /* Caramel - subtle border for replies */
+}
+
+/* Reply Form */
+.reply-form {
+    display: none; /* Hidden by default, shown when "Reply" is clicked */
+    margin-top: 1rem;
+    margin-left: 2rem; /* Align with nested replies */
+}
+
+.reply-form textarea {
+    width: 100%;
+    height: 80px;
+    padding: 0.75rem;
+    border: 1px solid #B7957F; /* Almond - soft border */
+    border-radius: 5px;
+    background-color: #F5F5F5; /* Off-white input background */
+    color: #403208; /* Espresso - text color */
+    font-family: 'Lora', serif;
+    resize: vertical;
+}
+
+.reply-form .submit-btn {
+    margin-top: 0.5rem;
+    background-color: #6D3914; /* Coffee - rich button color */
+    color: #D7BDA6; /* Vanilla - light text */
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Playfair Display', serif;
+    transition: background-color 0.3s ease;
+}
+
+.reply-form .submit-btn:hover {
+    background-color: #403208; /* Espresso - darker hover */
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .container {
+        max-width: 90%; /* Slightly more width on medium screens */
+        padding: 2rem 1.5rem;
+    }
+
+    .blog-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Smaller cards for medium screens */
+        gap: 1.5rem;
+    }
+
+    .blog-detail {
+        max-width: 90%; /* Slightly more width on medium screens */
+        padding: 1.5rem;
+    }
+
+    .blog-detail h1 {
+        font-size: 2.2rem;
+    }
+
+    .blog-detail img {
+        max-height: 350px;
+    }
+
+    .blog-detail p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        padding: 0.75rem; /* Further reduced padding for mobile */
+    }
+
+    .logo {
+        max-width: 120px; /* Smaller logo on mobile */
+    }
+
+    nav {
+        margin-top: 0.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-links li {
+        margin: 0.5rem 0;
+    }
+
+    .auth-buttons {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .auth-buttons button {
+        margin: 0.5rem 0;
+        width: 100%;
+    }
+
+    .profile {
+        margin-top: 0.5rem;
+    }
+
+    .container {
+        max-width: 95%; /* Almost full width on small screens */
+        padding: 1.5rem;
+    }
+
+    .blog-grid {
+        grid-template-columns: 1fr; /* Single column on small screens */
+        gap: 1.5rem;
+    }
+
+    .create-form, .auth-form {
+        max-width: 100%;
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+    .comment {
+        padding: 0.75rem;
+    }
+
+    .comment .replies {
+        margin-left: 1rem; /* Less indentation on mobile */
+    }
+
+    .reply-form {
+        margin-left: 1rem;
+    }
+
+    .reply-form textarea {
+        height: 60px;
+    }
+}
