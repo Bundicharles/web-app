@@ -14,7 +14,7 @@ const SECRET_KEY = 'your-secret-key';
 
 // Middleware
 app.use(cors({
-  origin: 'https://blog-platform-frontend.vercel.app',
+  origin: 'https://blog-platform-jet-zeta.vercel.app/',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
