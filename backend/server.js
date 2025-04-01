@@ -1,5 +1,4 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
@@ -7,21 +6,28 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const { Pool } = require('pg');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const SECRET_KEY = 'your-secret-key';
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://blog-platform-frontend.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(bodyParser.json({ limit: '100mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, 'public/uploads');
-        if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
+        const uploadPath = process.env.NODE_ENV === 'production' 
+            ? '/tmp/uploads' 
+            : path.join(__dirname, 'public/uploads');
+        if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
@@ -30,85 +36,78 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// SQLite Database Setup
-const db = new sqlite3.Database('database.db');
-db.serialize(() => {
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        password TEXT
-    )`);
-    db.run(`CREATE TABLE IF NOT EXISTS blogs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        content TEXT,
-        category TEXT,
-        author_id INTEGER,
-        created_at TEXT,
-        views INTEGER DEFAULT 0,
-        FOREIGN KEY (author_id) REFERENCES users(id)
-    )`);
-    db.run(`CREATE TABLE IF NOT EXISTS likes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        blog_id INTEGER,
-        user_id INTEGER,
-        FOREIGN KEY (blog_id) REFERENCES blogs(id),
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    )`);
-    db.run(`CREATE TABLE IF NOT EXISTS comments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        blog_id INTEGER,
-        user_id INTEGER,
-        content TEXT,
-        created_at TEXT,
-        parent_id INTEGER,
-        FOREIGN KEY (blog_id) REFERENCES blogs(id),
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
-    )`);
+// Serve uploaded images
+app.get('/uploads/:filename', (req, res) => {
+    const { filename } = req.params;
+    const filePath = process.env.NODE_ENV === 'production' 
+        ? `/tmp/uploads/${filename}` 
+        : path.join(__dirname, 'public/uploads', filename);
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            console.error('Error serving file:', err);
+            res.status(404).json({ message: 'File not found' });
+        }
+    });
 });
 
-// Check if parent_id column exists, and add it if it doesn't
-db.all("PRAGMA table_info(comments)", (err, columns) => {
-    if (err) {
-        console.error('Error checking comments table schema:', err);
-        return;
-    }
+// Postgres Database Setup
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
 
-    const hasParentId = columns.some(column => column.name === 'parent_id');
-    if (!hasParentId) {
-        console.log('Adding parent_id column to comments table...');
-        db.serialize(() => {
-            db.run(`CREATE TABLE comments_new (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+// Create tables
+const initializeDatabase = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL
+            )
+        `);
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS blogs (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                content TEXT,
+                category VARCHAR(255),
+                author_id INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                views INTEGER DEFAULT 0,
+                FOREIGN KEY (author_id) REFERENCES users(id)
+            )
+        `);
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS likes (
+                id SERIAL PRIMARY KEY,
+                blog_id INTEGER,
+                user_id INTEGER,
+                FOREIGN KEY (blog_id) REFERENCES blogs(id),
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        `);
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS comments (
+                id SERIAL PRIMARY KEY,
                 blog_id INTEGER,
                 user_id INTEGER,
                 content TEXT,
-                created_at TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 parent_id INTEGER,
                 FOREIGN KEY (blog_id) REFERENCES blogs(id),
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
-            )`);
-
-            db.run(`INSERT INTO comments_new (id, blog_id, user_id, content, created_at)
-                    SELECT id, blog_id, user_id, content, created_at
-                    FROM comments`);
-
-            db.run(`DROP TABLE comments`);
-
-            db.run(`ALTER TABLE comments_new RENAME TO comments`, (err) => {
-                if (err) {
-                    console.error('Error renaming comments table:', err);
-                } else {
-                    console.log('Successfully added parent_id column to comments table');
-                }
-            });
-        });
-    } else {
-        console.log('parent_id column already exists in comments table');
+            )
+        `);
+        console.log('Database tables created successfully');
+    } catch (err) {
+        console.error('Error initializing database:', err);
     }
-});
+};
+
+// Initialize the database
+initializeDatabase();
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -128,28 +127,32 @@ const authenticateToken = (req, res, next) => {
 // Routes
 
 // Sign Up
-app.post('/api/signup', (req, res) => {
+app.post('/api/signup', async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = bcrypt.hashSync(password, 8);
 
-    db.run(`INSERT INTO users (username, password) VALUES (?, ?)`, [username, hashedPassword], function (err) {
-        if (err) {
-            console.error('Error during signup:', err);
-            return res.status(400).json({ message: 'Username already exists' });
-        }
+    try {
+        await pool.query(
+            `INSERT INTO users (username, password) VALUES ($1, $2)`,
+            [username, hashedPassword]
+        );
         res.status(201).json({ message: 'User created' });
-    });
+    } catch (err) {
+        console.error('Error during signup:', err);
+        res.status(400).json({ message: 'Username already exists' });
+    }
 });
 
 // Login
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
 
-    db.get(`SELECT * FROM users WHERE username = ?`, [username], (err, user) => {
-        if (err) {
-            console.error('Error during login:', err);
-            return res.status(500).json({ message: 'Server error during login' });
-        }
+    try {
+        const result = await pool.query(
+            `SELECT * FROM users WHERE username = $1`,
+            [username]
+        );
+        const user = result.rows[0];
         if (!user) return res.status(400).json({ message: 'User not found' });
 
         const isPasswordValid = bcrypt.compareSync(password, user.password);
@@ -157,7 +160,10 @@ app.post('/api/login', (req, res) => {
 
         const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
         res.json({ token });
-    });
+    } catch (err) {
+        console.error('Error during login:', err);
+        res.status(500).json({ message: 'Server error during login' });
+    }
 });
 
 // Image Upload Endpoint
@@ -168,245 +174,229 @@ app.post('/api/upload-image', authenticateToken, upload.single('image'), (req, r
 });
 
 // Create a Blog Post
-app.post('/api/blogs', authenticateToken, (req, res) => {
+app.post('/api/blogs', authenticateToken, async (req, res) => {
     const { title, content, category } = req.body;
     const author_id = req.user.id;
-    const created_at = new Date().toISOString();
+    const created_at = new Date();
 
     console.log('Received blog creation request:', { title, content, category, author_id, created_at });
 
-    db.run(
-        `INSERT INTO blogs (title, content, category, author_id, created_at, views) VALUES (?, ?, ?, ?, ?, ?)`,
-        [title, content, category, author_id, created_at, 0],
-        function (err) {
-            if (err) {
-                console.error('Error inserting blog into database:', err);
-                return res.status(500).json({ message: `Error creating blog: ${err.message}` });
-            }
-            console.log('Blog created successfully with ID:', this.lastID);
-            res.status(201).json({ id: this.lastID });
-        }
-    );
+    try {
+        const result = await pool.query(
+            `INSERT INTO blogs (title, content, category, author_id, created_at, views) 
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+            [title, content, category, author_id, created_at, 0]
+        );
+        console.log('Blog created successfully with ID:', result.rows[0].id);
+        res.status(201).json({ id: result.rows[0].id });
+    } catch (err) {
+        console.error('Error inserting blog into database:', err);
+        res.status(500).json({ message: `Error creating blog: ${err.message}` });
+    }
 });
 
 // Get All Blogs
-app.get('/api/blogs', (req, res) => {
+app.get('/api/blogs', async (req, res) => {
     const category = req.query.category;
-    let query = `SELECT blogs.*, users.username, 
-                 (SELECT COUNT(*) FROM likes WHERE likes.blog_id = blogs.id) as likes,
-                 (SELECT COUNT(*) FROM comments WHERE comments.blog_id = blogs.id) as comment_count
-                 FROM blogs JOIN users ON blogs.author_id = users.id`;
+    let query = `
+        SELECT blogs.*, users.username, 
+        (SELECT COUNT(*) FROM likes WHERE likes.blog_id = blogs.id) as likes,
+        (SELECT COUNT(*) FROM comments WHERE comments.blog_id = blogs.id) as comment_count
+        FROM blogs JOIN users ON blogs.author_id = users.id
+    `;
     let params = [];
 
     if (category) {
-        query += ` WHERE blogs.category = ?`;
+        query += ` WHERE blogs.category = $1`;
         params.push(category);
     }
 
     query += ` ORDER BY blogs.created_at DESC`;
 
-    db.all(query, params, (err, blogs) => {
-        if (err) {
-            console.error('Error fetching blogs:', err);
-            return res.status(500).json({ message: 'Error fetching blogs' });
-        }
-        res.json(blogs);
-    });
+    try {
+        const result = await pool.query(query, params);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching blogs:', err);
+        res.status(500).json({ message: 'Error fetching blogs' });
+    }
 });
 
 // Get a Single Blog by ID
-app.get('/api/blogs/:id', (req, res) => {
+app.get('/api/blogs/:id', async (req, res) => {
     const { id } = req.params;
 
-    // Increment views
-    db.run(`UPDATE blogs SET views = views + 1 WHERE id = ?`, [id], (err) => {
-        if (err) console.error('Error incrementing views:', err);
-    });
+    try {
+        // Increment views
+        await pool.query(`UPDATE blogs SET views = views + 1 WHERE id = $1`, [id]);
 
-    db.get(
-        `SELECT blogs.*, users.username FROM blogs JOIN users ON blogs.author_id = users.id WHERE blogs.id = ?`,
-        [id],
-        (err, blog) => {
-            if (err) {
-                console.error('Error fetching blog:', err);
-                return res.status(500).json({ message: 'Error fetching blog' });
-            }
-            if (!blog) return res.status(404).json({ message: 'Blog not found' });
+        // Fetch the blog
+        const blogResult = await pool.query(
+            `SELECT blogs.*, users.username 
+             FROM blogs JOIN users ON blogs.author_id = users.id 
+             WHERE blogs.id = $1`,
+            [id]
+        );
+        const blog = blogResult.rows[0];
+        if (!blog) return res.status(404).json({ message: 'Blog not found' });
 
-            db.get(`SELECT COUNT(*) as likes FROM likes WHERE blog_id = ?`, [id], (err, likeResult) => {
-                if (err) {
-                    console.error('Error counting likes:', err);
-                    return res.status(500).json({ message: 'Error counting likes' });
+        // Fetch likes
+        const likeResult = await pool.query(
+            `SELECT COUNT(*) as likes FROM likes WHERE blog_id = $1`,
+            [id]
+        );
+
+        // Fetch all comments
+        const commentsResult = await pool.query(
+            `SELECT comments.*, users.username 
+             FROM comments 
+             JOIN users ON comments.user_id = users.id 
+             WHERE comments.blog_id = $1 
+             ORDER BY comments.created_at DESC`,
+            [id]
+        );
+        const allComments = commentsResult.rows;
+
+        // Build nested comment structure
+        const commentsMap = {};
+        const topLevelComments = [];
+        allComments.forEach(comment => {
+            comment.replies = [];
+            commentsMap[comment.id] = comment;
+        });
+        allComments.forEach(comment => {
+            if (comment.parent_id) {
+                if (commentsMap[comment.parent_id]) {
+                    commentsMap[comment.parent_id].replies.push(comment);
                 }
+            } else {
+                topLevelComments.push(comment);
+            }
+        });
 
-                // Fetch all comments for the blog
-                db.all(
-                    `SELECT comments.*, users.username 
-                     FROM comments 
-                     JOIN users ON comments.user_id = users.id 
-                     WHERE comments.blog_id = ? 
-                     ORDER BY comments.created_at DESC`,
-                    [id],
-                    (err, allComments) => {
-                        if (err) {
-                            console.error('Error fetching comments:', err);
-                            return res.status(500).json({ message: 'Error fetching comments' });
-                        }
-
-                        // Build a nested comment structure
-                        const commentsMap = {};
-                        const topLevelComments = [];
-
-                        // Initialize each comment with an empty replies array
-                        allComments.forEach(comment => {
-                            comment.replies = [];
-                            commentsMap[comment.id] = comment;
-                        });
-
-                        // Organize comments into a nested structure
-                        allComments.forEach(comment => {
-                            if (comment.parent_id) {
-                                // If the comment has a parent_id, add it to the parent's replies
-                                if (commentsMap[comment.parent_id]) {
-                                    commentsMap[comment.parent_id].replies.push(comment);
-                                }
-                            } else {
-                                // If no parent_id, it's a top-level comment
-                                topLevelComments.push(comment);
-                            }
-                        });
-
-                        blog.comments = topLevelComments;
-                        blog.likes = likeResult.likes;
-                        res.json(blog);
-                    }
-                );
-            });
-        }
-    );
+        blog.comments = topLevelComments;
+        blog.likes = parseInt(likeResult.rows[0].likes);
+        res.json(blog);
+    } catch (err) {
+        console.error('Error fetching blog:', err);
+        res.status(500).json({ message: 'Error fetching blog' });
+    }
 });
 
 // Like a Blog
-app.post('/api/blogs/:id/like', authenticateToken, (req, res) => {
+app.post('/api/blogs/:id/like', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const user_id = req.user.id;
 
-    db.get(`SELECT * FROM likes WHERE blog_id = ? AND user_id = ?`, [id, user_id], (err, like) => {
-        if (err) {
-            console.error('Error checking like:', err);
-            return res.status(500).json({ message: 'Error checking like' });
-        }
-        if (like) return res.status(400).json({ message: 'Already liked' });
+    try {
+        const likeResult = await pool.query(
+            `SELECT * FROM likes WHERE blog_id = $1 AND user_id = $2`,
+            [id, user_id]
+        );
+        if (likeResult.rows.length > 0) return res.status(400).json({ message: 'Already liked' });
 
-        db.run(`INSERT INTO likes (blog_id, user_id) VALUES (?, ?)`, [id, user_id], (err) => {
-            if (err) {
-                console.error('Error liking blog:', err);
-                return res.status(500).json({ message: 'Error liking blog' });
-            }
-            res.json({ message: 'Liked' });
-        });
-    });
+        await pool.query(
+            `INSERT INTO likes (blog_id, user_id) VALUES ($1, $2)`,
+            [id, user_id]
+        );
+        res.json({ message: 'Liked' });
+    } catch (err) {
+        console.error('Error liking blog:', err);
+        res.status(500).json({ message: 'Error liking blog' });
+    }
 });
 
 // Comment on a Blog
-app.post('/api/blogs/:id/comment', authenticateToken, (req, res) => {
+app.post('/api/blogs/:id/comment', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { content } = req.body;
     const user_id = req.user.id;
-    const created_at = new Date().toISOString();
+    const created_at = new Date();
 
-    db.run(
-        `INSERT INTO comments (blog_id, user_id, content, created_at) VALUES (?, ?, ?, ?)`,
-        [id, user_id, content, created_at],
-        (err) => {
-            if (err) {
-                console.error('Error adding comment:', err);
-                return res.status(500).json({ message: 'Error adding comment' });
-            }
-            res.json({ message: 'Comment added' });
-        }
-    );
+    try {
+        await pool.query(
+            `INSERT INTO comments (blog_id, user_id, content, created_at) 
+             VALUES ($1, $2, $3, $4)`,
+            [id, user_id, content, created_at]
+        );
+        res.json({ message: 'Comment added' });
+    } catch (err) {
+        console.error('Error adding comment:', err);
+        res.status(500).json({ message: 'Error adding comment' });
+    }
 });
 
 // Add a Reply to a Comment
-app.post('/api/blogs/:id/comment/reply', authenticateToken, (req, res) => {
-    const { id } = req.params; // blog_id
+app.post('/api/blogs/:id/comment/reply', authenticateToken, async (req, res) => {
+    const { id } = req.params;
     const { content, parent_id } = req.body;
     const user_id = req.user.id;
-    const created_at = new Date().toISOString();
+    const created_at = new Date();
 
-    // Verify that the parent comment exists and belongs to the blog
-    db.get(
-        `SELECT * FROM comments WHERE id = ? AND blog_id = ?`,
-        [parent_id, id],
-        (err, parentComment) => {
-            if (err) {
-                console.error('Error verifying parent comment:', err);
-                return res.status(500).json({ message: 'Error verifying parent comment' });
-            }
-            if (!parentComment) {
-                return res.status(404).json({ message: 'Parent comment not found' });
-            }
-
-            // Insert the reply
-            db.run(
-                `INSERT INTO comments (blog_id, user_id, content, created_at, parent_id) VALUES (?, ?, ?, ?, ?)`,
-                [id, user_id, content, created_at, parent_id],
-                function (err) {
-                    if (err) {
-                        console.error('Error adding reply:', err);
-                        return res.status(500).json({ message: 'Error adding reply' });
-                    }
-                    res.status(201).json({ message: 'Reply added successfully', commentId: this.lastID });
-                }
-            );
+    try {
+        const parentResult = await pool.query(
+            `SELECT * FROM comments WHERE id = $1 AND blog_id = $2`,
+            [parent_id, id]
+        );
+        if (parentResult.rows.length === 0) {
+            return res.status(404).json({ message: 'Parent comment not found' });
         }
-    );
+
+        const result = await pool.query(
+            `INSERT INTO comments (blog_id, user_id, content, created_at, parent_id) 
+             VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+            [id, user_id, content, created_at, parent_id]
+        );
+        res.status(201).json({ message: 'Reply added successfully', commentId: result.rows[0].id });
+    } catch (err) {
+        console.error('Error adding reply:', err);
+        res.status(500).json({ message: 'Error adding reply' });
+    }
 });
 
 // Get Blogs by User (for manage.html)
-app.get('/api/user/blogs', authenticateToken, (req, res) => {
+app.get('/api/user/blogs', authenticateToken, async (req, res) => {
     const user_id = req.user.id;
-    db.all(
-        `SELECT blogs.*, users.username,
-         (SELECT COUNT(*) FROM likes WHERE likes.blog_id = blogs.id) as likes,
-         (SELECT COUNT(*) FROM comments WHERE comments.blog_id = blogs.id) as comment_count
-         FROM blogs JOIN users ON blogs.author_id = users.id
-         WHERE blogs.author_id = ?
-         ORDER BY blogs.created_at DESC`,
-        [user_id],
-        (err, blogs) => {
-            if (err) {
-                console.error('Error fetching user blogs:', err);
-                return res.status(500).json({ message: 'Error fetching blogs' });
-            }
-            res.json(blogs);
-        }
-    );
+
+    try {
+        const result = await pool.query(
+            `SELECT blogs.*, users.username,
+             (SELECT COUNT(*) FROM likes WHERE likes.blog_id = blogs.id) as likes,
+             (SELECT COUNT(*) FROM comments WHERE comments.blog_id = blogs.id) as comment_count
+             FROM blogs JOIN users ON blogs.author_id = users.id
+             WHERE blogs.author_id = $1
+             ORDER BY blogs.created_at DESC`,
+            [user_id]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching user blogs:', err);
+        res.status(500).json({ message: 'Error fetching blogs' });
+    }
 });
 
 // Delete a Blog
-app.delete('/api/blogs/:id', authenticateToken, (req, res) => {
+app.delete('/api/blogs/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const user_id = req.user.id;
 
-    db.get(`SELECT * FROM blogs WHERE id = ? AND author_id = ?`, [id, user_id], (err, blog) => {
-        if (err) {
-            console.error('Error checking blog ownership:', err);
-            return res.status(500).json({ message: 'Error checking blog ownership' });
+    try {
+        const blogResult = await pool.query(
+            `SELECT * FROM blogs WHERE id = $1 AND author_id = $2`,
+            [id, user_id]
+        );
+        if (blogResult.rows.length === 0) {
+            return res.status(403).json({ message: 'Unauthorized or blog not found' });
         }
-        if (!blog) return res.status(403).json({ message: 'Unauthorized or blog not found' });
 
-        db.run(`DELETE FROM blogs WHERE id = ?`, [id], (err) => {
-            if (err) {
-                console.error('Error deleting blog:', err);
-                return res.status(500).json({ message: 'Error deleting blog' });
-            }
-            db.run(`DELETE FROM likes WHERE blog_id = ?`, [id]);
-            db.run(`DELETE FROM comments WHERE blog_id = ?`, [id]);
-            res.json({ message: 'Blog deleted' });
-        });
-    });
+        await pool.query(`DELETE FROM blogs WHERE id = $1`, [id]);
+        await pool.query(`DELETE FROM likes WHERE blog_id = $1`, [id]);
+        await pool.query(`DELETE FROM comments WHERE blog_id = $1`, [id]);
+        res.json({ message: 'Blog deleted' });
+    } catch (err) {
+        console.error('Error deleting blog:', err);
+        res.status(500).json({ message: 'Error deleting blog' });
+    }
 });
 
 // Start the server
