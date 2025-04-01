@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://blog-platform-pe8d.vercel.app/';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded and script running');
