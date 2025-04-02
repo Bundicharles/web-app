@@ -30,13 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Hamburger Menu Toggle
-    // Hamburger Menu Toggle
 window.toggleMenu = function () {
     console.log('toggleMenu called');
     const navMenu = document.getElementById('navMenu');
     if (navMenu) {
         console.log('Nav menu found, current display:', navMenu.style.display);
-        navMenu.classList.toggle('active');
+        navMenu.style.display = navMenu.style.display === 'block' ? 'none' : 'block';
         console.log('New display:', navMenu.style.display);
     } else {
         console.error('Nav menu element not found');

@@ -186,10 +186,7 @@ nav {
     min-width: 150px;
 }
 
-.hamburger-menu.active {
-    display: block; /* Show when active */
-}
-
+/* Remove the .active class since we're toggling display directly */
 .hamburger-menu a {
     display: block;
     color: #D7BDA6; /* Vanilla - light text */
