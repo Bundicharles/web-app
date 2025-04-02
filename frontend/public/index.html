@@ -9,7 +9,8 @@
 <body>
     <header>
         <img src="Scoffie.png" alt="Blog Platform Logo" class="logo">
-        <nav>
+        <button class="hamburger" onclick="toggleMenu()">☰</button>
+        <nav id="navMenu">
             <ul class="nav-links">
                 <li><a href="#" onclick="fetchAndRenderBlogs('')">All</a></li>
                 <li><a href="#" onclick="fetchAndRenderBlogs('Politics')">Politics</a></li>

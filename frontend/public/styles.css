@@ -20,7 +20,7 @@ header {
     background-color: #A87343;
     padding: 0.5rem 1rem; /* Reduced padding for a narrower header */
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Ensure logo and hamburger are on opposite ends */
     align-items: center;
     border-bottom: 3px solid #6D3914;
     position: sticky;
@@ -28,14 +28,17 @@ header {
     z-index: 100;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
 .logo {
     max-width: 150px; /* Slightly reduced logo size to match the narrower header */
     height: auto;
+    order: 1; /* Ensure logo is on the left */
 }
 
 nav {
     display: flex;
     align-items: center;
+    order: 3; /* Nav comes after logo and hamburger */
 }
 
 .nav-links {
@@ -118,6 +121,16 @@ nav {
 
 .profile-menu a:hover {
     background-color: #6D3914; /* Coffee - darker hover */
+}
+
+.hamburger {
+    display: none; /* Hidden by default, shown in mobile */
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #D7BDA6;
+    cursor: pointer;
+    order: 2; /* Ensure hamburger is on the right */
 }
 
 /* Hero Section */
@@ -359,14 +372,6 @@ h3 {
     border-radius: 5px;
     font-family: 'Playfair Display', serif;
 }
-.hamburger {
-    display: none; /* Hidden by default, shown in mobile */
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #D7BDA6;
-    cursor: pointer;
-}
 
 .comment-form {
     margin-top: 2rem;
@@ -376,6 +381,7 @@ h3 {
     height: 120px;
     resize: vertical;
 }
+
 .comment {
     margin-bottom: 1.5rem;
     padding: 1rem;
@@ -497,43 +503,64 @@ h3 {
 }
 
 @media (max-width: 600px) {
-    header {
-        padding: 0.3rem 0.5rem; /* Further reduced padding for mobile */
+    /* Hamburger menu styles for index.html */
+    .hamburger {
+        display: block; /* Show hamburger in mobile */
     }
 
-    .logo {
-        max-width: 80px; /* Smaller logo to save space */
-    }
-
-    nav {
-        margin-top: 0.2rem; /* Reduced margin to minimize vertical space */
+    #navMenu {
+        display: none; /* Hidden by default, shown when toggled */
         flex-direction: column;
         align-items: flex-start;
+        width: 200px; /* Fixed width for the menu */
+        background-color: #A87343;
+        position: absolute;
+        top: calc(100% + 0.5rem); /* Slightly below the header */
+        right: 0; /* Align to the right, under the hamburger */
+        padding: 0.5rem;
+        border: 1px solid #6D3914; /* Add a border for clarity */
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
-    .nav-links {
-        flex-direction: column;
-        align-items: flex-start;
+    #navMenu.active {
+        display: flex; /* Show when active */
     }
 
-    .nav-links li {
-        margin: 0.2rem 0; /* Reduced margin between nav links */
-    }
-
-    .auth-buttons {
-        display: flex;
-        flex-direction: column;
+    .nav-links, .auth-buttons {
         width: 100%;
     }
 
-    .auth-buttons button {
-        margin: 0.2rem 0; /* Reduced margin between buttons */
-        padding: 0.3rem 1rem; /* Smaller padding for buttons */
-        font-size: 0.9rem; /* Smaller font size for buttons */
+    .nav-links li, .auth-buttons button {
+        width: 100%;
+        text-align: left;
+        margin: 0.2rem 0; /* Reduced margin */
     }
 
-    .profile {
-        margin-top: 0.2rem; /* Reduced margin */
+    /* Specific adjustments for index.html */
+    body:has(main > .container > .blogs-section) header {
+        padding: 0.3rem 0.5rem; /* Reduced padding for index.html */
+    }
+
+    body:has(main > .container > .blogs-section) .logo {
+        max-width: 80px; /* Smaller logo for index.html */
+    }
+
+    body:has(main > .container > .blogs-section) nav {
+        margin-top: 0; /* Remove margin to reduce space */
+    }
+
+    /* Keep navbar size for other pages */
+    body:not(:has(main > .container > .blogs-section)) header {
+        padding: 0.5rem 1rem; /* Original padding for other pages */
+    }
+
+    body:not(:has(main > .container > .blogs-section)) .logo {
+        max-width: 150px; /* Original logo size for other pages */
+    }
+
+    body:not(:has(main > .container > .blogs-section)) nav {
+        margin-top: 0.2rem; /* Original margin for other pages */
     }
 
     .container {
@@ -573,35 +600,5 @@ h3 {
 
     .reply-form textarea {
         height: 60px;
-    }
-}
-@media (max-width: 600px) {
-    .hamburger {
-        display: block; /* Show hamburger in mobile */
-    }
-
-    #navMenu {
-        display: none; /* Hidden by default, shown when toggled */
-        flex-direction: column;
-        align-items: flex-start;
-        width: 100%;
-        background-color: #A87343;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        padding: 0.5rem;
-    }
-
-    #navMenu.active {
-        display: flex; /* Show when active */
-    }
-
-    .nav-links, .auth-buttons {
-        width: 100%;
-    }
-
-    .nav-links li, .auth-buttons button {
-        width: 100%;
-        text-align: left;
     }
 }

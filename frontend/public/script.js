@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'index.html';
     };
 
+    // Toggle the hamburger menu
+    window.toggleMenu = function () {
+        const navMenu = document.getElementById('navMenu');
+        navMenu.classList.toggle('active');
+    };
+
     // Token-based visibility logic
     const token = localStorage.getItem('token');
     const profileElement = document.querySelector('.profile');
@@ -46,10 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (authButtons) {
             authButtons.style.display = 'block';
         }
-    }
-    function toggleMenu() {
-        const navMenu = document.getElementById('navMenu');
-        navMenu.classList.toggle('active');
     }
 
     // Attach event listeners for login/signup
