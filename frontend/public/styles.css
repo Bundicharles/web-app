@@ -17,18 +17,17 @@ body {
 
 /* Header */
 header {
-    background-color: #A87343; /* Caramel - warm and inviting */
-    padding: 1rem 2rem; /* Reduced vertical padding from 1.5rem to 1rem for a narrower navbar */
+    background-color: #A87343;
+    padding: 0.5rem 1rem; /* Reduced padding for a narrower header */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 3px solid #6D3914; /* Coffee - a subtle, rich border */
+    border-bottom: 3px solid #6D3914;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-
 .logo {
     max-width: 150px; /* Slightly reduced logo size to match the narrower header */
     height: auto;
@@ -360,6 +359,14 @@ h3 {
     border-radius: 5px;
     font-family: 'Playfair Display', serif;
 }
+.hamburger {
+    display: none; /* Hidden by default, shown in mobile */
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #D7BDA6;
+    cursor: pointer;
+}
 
 .comment-form {
     margin-top: 2rem;
@@ -491,16 +498,15 @@ h3 {
 
 @media (max-width: 600px) {
     header {
-        flex-direction: column;
-        padding: 0.75rem; /* Further reduced padding for mobile */
+        padding: 0.3rem 0.5rem; /* Further reduced padding for mobile */
     }
 
     .logo {
-        max-width: 120px; /* Smaller logo on mobile */
+        max-width: 80px; /* Smaller logo to save space */
     }
 
     nav {
-        margin-top: 0.5rem;
+        margin-top: 0.2rem; /* Reduced margin to minimize vertical space */
         flex-direction: column;
         align-items: flex-start;
     }
@@ -511,7 +517,7 @@ h3 {
     }
 
     .nav-links li {
-        margin: 0.5rem 0;
+        margin: 0.2rem 0; /* Reduced margin between nav links */
     }
 
     .auth-buttons {
@@ -521,21 +527,22 @@ h3 {
     }
 
     .auth-buttons button {
-        margin: 0.5rem 0;
-        width: 100%;
+        margin: 0.2rem 0; /* Reduced margin between buttons */
+        padding: 0.3rem 1rem; /* Smaller padding for buttons */
+        font-size: 0.9rem; /* Smaller font size for buttons */
     }
 
     .profile {
-        margin-top: 0.5rem;
+        margin-top: 0.2rem; /* Reduced margin */
     }
 
     .container {
-        max-width: 95%; /* Almost full width on small screens */
+        max-width: 95%;
         padding: 1.5rem;
     }
 
     .blog-grid {
-        grid-template-columns: 1fr; /* Single column on small screens */
+        grid-template-columns: 1fr;
         gap: 1.5rem;
     }
 
@@ -551,12 +558,13 @@ h3 {
     h2 {
         font-size: 1.5rem;
     }
+
     .comment {
         padding: 0.75rem;
     }
 
     .comment .replies {
-        margin-left: 1rem; /* Less indentation on mobile */
+        margin-left: 1rem;
     }
 
     .reply-form {
@@ -565,5 +573,35 @@ h3 {
 
     .reply-form textarea {
         height: 60px;
+    }
+}
+@media (max-width: 600px) {
+    .hamburger {
+        display: block; /* Show hamburger in mobile */
+    }
+
+    #navMenu {
+        display: none; /* Hidden by default, shown when toggled */
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        background-color: #A87343;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        padding: 0.5rem;
+    }
+
+    #navMenu.active {
+        display: flex; /* Show when active */
+    }
+
+    .nav-links, .auth-buttons {
+        width: 100%;
+    }
+
+    .nav-links li, .auth-buttons button {
+        width: 100%;
+        text-align: left;
     }
 }

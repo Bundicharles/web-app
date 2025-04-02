@@ -47,6 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
             authButtons.style.display = 'block';
         }
     }
+    function toggleMenu() {
+        const navMenu = document.getElementById('navMenu');
+        navMenu.classList.toggle('active');
+    }
 
     // Attach event listeners for login/signup
     document.getElementById('loginBtn')?.addEventListener('click', () => {
