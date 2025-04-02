@@ -9,13 +9,18 @@
 <body>
     <header>
         <img src="Scoffie.png" alt="Blog Platform Logo" class="logo">
-        <button class="hamburger" onclick="toggleMenu()">☰</button>
-        <nav id="navMenu">
+        <nav>
             <ul class="nav-links">
                 <li><a href="#" onclick="fetchAndRenderBlogs('')">All</a></li>
-                <li><a href="#" onclick="fetchAndRenderBlogs('Politics')">Politics</a></li>
-                <li><a href="#" onclick="fetchAndRenderBlogs('Lifestyle')">Lifestyle</a></li>
-                <li><a href="#" onclick="fetchAndRenderBlogs('Entertainment')">Entertainment</a></li>
+                <!-- Categories icon with dropdown -->
+                <li class="categories">
+                    <img src="categories-icon.png" alt="Categories" class="categories-icon" onclick="toggleCategoriesMenu()" onerror="this.src='https://via.placeholder.com/40';">
+                    <div class="categories-menu" id="categoriesMenu" style="display: none;">
+                        <a href="#" onclick="fetchAndRenderBlogs('Politics')">Politics</a>
+                        <a href="#" onclick="fetchAndRenderBlogs('Lifestyle')">Lifestyle</a>
+                        <a href="#" onclick="fetchAndRenderBlogs('Entertainment')">Entertainment</a>
+                    </div>
+                </li>
             </ul>
             <div class="auth-buttons" id="authButtons">
                 <button id="loginBtn">Login</button>
@@ -30,6 +35,13 @@
                 </div>
             </div>
         </nav>
+        <button class="hamburger" onclick="toggleMenu()">☰</button>
+        <!-- Hamburger menu dropdown for mobile -->
+        <div class="hamburger-menu" id="navMenu" style="display: none;">
+            <a href="#" onclick="fetchAndRenderBlogs('Politics')">Politics</a>
+            <a href="#" onclick="fetchAndRenderBlogs('Lifestyle')">Lifestyle</a>
+            <a href="#" onclick="fetchAndRenderBlogs('Entertainment')">Entertainment</a>
+        </div>
     </header>
     
     <main class="container">

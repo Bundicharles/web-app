@@ -16,16 +16,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Categories Dropdown for the icon
+    window.toggleCategoriesMenu = function () {
+        console.log('toggleCategoriesMenu called');
+        const categoriesMenu = document.getElementById('categoriesMenu');
+        if (categoriesMenu) {
+            console.log('Categories menu found, current display:', categoriesMenu.style.display);
+            categoriesMenu.style.display = categoriesMenu.style.display === 'block' ? 'none' : 'block';
+            console.log('New display:', categoriesMenu.style.display);
+        } else {
+            console.error('Categories menu element not found');
+        }
+    };
+
+    // Hamburger Menu Toggle
+    window.toggleMenu = function () {
+        const navMenu = document.getElementById('navMenu');
+        navMenu.classList.toggle('active');
+    };
+
     window.logout = function () {
         console.log('Logout called');
         localStorage.removeItem('token');
         window.location.href = 'index.html';
-    };
-
-    // Toggle the hamburger menu
-    window.toggleMenu = function () {
-        const navMenu = document.getElementById('navMenu');
-        navMenu.classList.toggle('active');
     };
 
     // Token-based visibility logic
