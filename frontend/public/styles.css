@@ -17,7 +17,7 @@ body {
 
 /* Header */
 header {
-    background-color: #A87343;
+    background-color: #6D3914;
     padding: 0.5rem 1rem; /* Reduced padding for a narrower header */
     display: flex;
     justify-content: space-between; /* Ensure logo and hamburger are on opposite ends */
@@ -236,7 +236,7 @@ h1 {
 }
 
 h2 {
-    color: #6D3914; /* Coffee - warm secondary heading */
+    color: #c58f68; /* Coffee - warm secondary heading */
     margin-bottom: 2rem;
     font-size: 2rem;
     font-family: 'Playfair Display', serif;
