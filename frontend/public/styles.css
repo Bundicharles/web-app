@@ -17,7 +17,7 @@ body {
 
 /* Header */
 header {
-    background-color: #ffc895;
+    background-color: #A87343;
     padding: 0.5rem 1rem; /* Reduced padding for a narrower header */
     display: flex;
     justify-content: space-between; /* Ensure logo and hamburger are on opposite ends */
@@ -243,7 +243,7 @@ h2 {
 }
 
 h3 {
-    color: #A87343; /* Caramel - warm accent for smaller headings */
+    color: #e2ab77; /* Caramel - warm accent for smaller headings */
     margin-bottom: 1rem;
     font-family: 'Playfair Display', serif;
 }
