@@ -222,7 +222,7 @@ nav {
     width: 100%; /* Ensures it scales dynamically */
     margin: 0 auto;
     padding: 3rem 2rem;
-    background-color: #F5F5F5; /* Off-white for a clean content area */
+    background-color: #411a1a; /* Off-white for a clean content area */
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
