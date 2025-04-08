@@ -133,6 +133,7 @@ nav {
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    background-color: #6D3914;
     border: 2px solid #D7BDA6; /* Vanilla border */
     cursor: pointer;
 }
