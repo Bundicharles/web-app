@@ -30,7 +30,7 @@ header {
 }
 
 .logo {
-    max-width: 150px; /* Slightly reduced logo size to match the narrower header */
+    max-width: 80px; /* Slightly reduced logo size to match the narrower header */
     height: auto;
     order: 1; /* Ensure logo is on the left */
 }
