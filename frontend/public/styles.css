@@ -95,6 +95,7 @@ nav {
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    background-color: #A87343;
     border: 2px solid #D7BDA6; /* Vanilla border */
     cursor: pointer;
 }
