@@ -9,7 +9,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:wght@400;700&family=Roboto:wght@400&display=swap');
 
 body {
-    background-color:000000;  /* Vanilla - a soft, warm background */
+    background-color:#252112;  /* Vanilla - a soft, warm background */
     color: #403208; /* Espresso - a rich, dark text color */
     line-height: 1.8;
     font-family: 'Lora', serif; /* Classic serif font for body text */
@@ -17,7 +17,7 @@ body {
 
 /* Header */
 header {
-    background-color: 14213D;
+    background-color:#201905;
     padding: 0.5rem 1rem; /* Reduced padding for a narrower header */
     display: flex;
     justify-content: space-between; /* Ensure logo and hamburger are on opposite ends */
