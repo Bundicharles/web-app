@@ -17,7 +17,7 @@ body {
 
 /* Header */
 header {
-    background-color:#6D3914
+    background-color: #A87343;
     padding: 0.5rem 1rem; /* Reduced padding for a narrower header */
     display: flex;
     justify-content: space-between; /* Ensure logo and hamburger are on opposite ends */
@@ -70,7 +70,7 @@ nav {
 }
 
 .auth-buttons button {
-    background-color: #df8341; /* Coffee - a deep, rich button color */
+    background-color: #6D3914; /* Coffee - a deep, rich button color */
     color: #D7BDA6; /* Vanilla - light text */
     border: 1px solid #403208; /* Espresso - subtle border */
     padding: 0.5rem 1.5rem;
@@ -236,14 +236,14 @@ h1 {
 }
 
 h2 {
-    color: #c58f68; /* Coffee - warm secondary heading */
+    color: #6D3914; /* Coffee - warm secondary heading */
     margin-bottom: 2rem;
     font-size: 2rem;
     font-family: 'Playfair Display', serif;
 }
 
 h3 {
-    color: #e2ab77; /* Caramel - warm accent for smaller headings */
+    color: #A87343; /* Caramel - warm accent for smaller headings */
     margin-bottom: 1rem;
     font-family: 'Playfair Display', serif;
 }
