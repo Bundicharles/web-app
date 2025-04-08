@@ -18,7 +18,7 @@ body {
 /* Header */
 header {
     background-color:#343434;
-    padding: 0.5rem 1rem; /* Reduced padding for a narrower header */
+    padding: 0.2rem 1rem; /* Reduced padding for a narrower header */
     display: flex;
     justify-content: space-between; /* Ensure logo and hamburger are on opposite ends */
     align-items: center;
