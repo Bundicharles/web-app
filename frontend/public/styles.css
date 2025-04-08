@@ -229,7 +229,7 @@ nav {
 }
 
 h1 {
-    color: #07f068; /* Espresso - rich heading color */
+    color: #6D3914; /* Espresso - rich heading color */
     margin-bottom: 1.5rem;
     font-size: 3rem;
     font-family: 'Playfair Display', serif; /* Elegant heading font */
@@ -238,14 +238,14 @@ h1 {
 }
 
 h2 {
-    color: #6D3914; /* Coffee - warm secondary heading */
+    color: #09d83d; /* Coffee - warm secondary heading */
     margin-bottom: 2rem;
     font-size: 2rem;
     font-family: 'Playfair Display', serif;
 }
 
 h3 {
-    color: #A87343; /* Caramel - warm accent for smaller headings */
+    color: #0e11dd; /* Caramel - warm accent for smaller headings */
     margin-bottom: 1rem;
     font-family: 'Playfair Display', serif;
 }
