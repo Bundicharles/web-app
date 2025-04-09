@@ -405,7 +405,7 @@ h3 {
 .blog-detail img {
     width: 100%; /* Make the image span the full width of the container */
     height: auto; /* Maintain aspect ratio */
-    max-height: 100px; /* Limit the height to avoid overly tall images */
+    max-height: 500px; /* Limit the height to avoid overly tall images */
     object-fit: cover; /* Ensure the image scales nicely */
     border-radius: 5px; /* Add a slight border radius for elegance */
     margin: 1.5rem 0; /* Add spacing above and below the image */
