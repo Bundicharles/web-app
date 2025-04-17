@@ -1,56 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Platform</title>
-    <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog Platform</title>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-    <header>
-        <img src="Scoffie.png" alt="Blog Platform Logo" class="logo">
-        <nav>
-            <ul class="nav-links">
-                <li><a href="#" onclick="fetchAndRenderBlogs('')">All</a></li>
-                <!-- Categories icon with dropdown -->
-                <li class="categories">
-                    <img src="menu.png" alt="Categories" class="categories-icon" onclick="toggleCategoriesMenu()">
-                    <div class="categories-menu" id="categoriesMenu" style="display: none;">
-                        <a href="#" onclick="fetchAndRenderBlogs('Politics')">Politics</a>
-                        <a href="#" onclick="fetchAndRenderBlogs('Lifestyle')">Lifestyle</a>
-                        <a href="#" onclick="fetchAndRenderBlogs('Entertainment')">Entertainment</a>
-                    </div>
-                </li>
-            </ul>
-            <div class="auth-buttons" id="authButtons">
-                <button id="loginBtn">Login</button>
-                <button id="signupBtn">Sign Up</button>
+  <header class="header classy-header">
+    <div class="container header-container">
+      <div class="logo-wrapper">
+        <img src="Scoffie.png" alt="Blog Platform Logo" class="logo" />
+      </div>
+      <nav class="navigation">
+        <ul class="nav-links">
+          <li><a href="#" onclick="fetchAndRenderBlogs('')">All</a></li>
+          <li class="dropdown categories">
+            <img src="menu.png" alt="Categories" class="categories-icon" onclick="toggleCategoriesMenu()" />
+            <div class="categories-menu" id="categoriesMenu" style="display: none;">
+              <a href="#" onclick="fetchAndRenderBlogs('Politics')">Politics</a>
+              <a href="#" onclick="fetchAndRenderBlogs('Lifestyle')">Lifestyle</a>
+              <a href="#" onclick="fetchAndRenderBlogs('Entertainment')">Entertainment</a>
             </div>
-            <div class="profile">
-                <img src="profile.png" alt="Profile" class="profile-icon" onclick="toggleProfileMenu()">
-                <div class="profile-menu" id="profileMenu" style="display: none;">
-                    <a href="create.html">Create Blog</a>
-                    <a href="manage.html">Manage Blogs</a>
-                    <a href="#" onclick="logout()">Logout</a>
-                </div>
-            </div>
-        </nav>
-        <button class="hamburger" onclick="toggleMenu()">☰</button>
-        <!-- Hamburger menu dropdown for mobile -->
-        <div class="hamburger-menu" id="navMenu">
-            <a href="#" onclick="fetchAndRenderBlogs('Politics')">Politics</a>
-            <a href="#" onclick="fetchAndRenderBlogs('Lifestyle')">Lifestyle</a>
-            <a href="#" onclick="fetchAndRenderBlogs('Entertainment')">Entertainment</a>
+          </li>
+        </ul>
+        <div class="auth-buttons" id="authButtons">
+          <button id="loginBtn" class="btn">Login</button>
+          <button id="signupBtn" class="btn btn-primary">Sign Up</button>
         </div>
-    </header>
-    
-    <main class="container">
-        <h1>Blog Platform</h1>
-        <section class="blogs-section">
-            <h2>All Blogs</h2>
-            <div id="blogsList" class="blog-grid"></div>
-        </section>
-    </main>
-    <script src="/script.js"></script>
+        <div class="profile">
+          <img src="profile.png" alt="Profile" class="profile-icon" onclick="toggleProfileMenu()" />
+          <div class="profile-menu" id="profileMenu" style="display: none;">
+            <a href="create.html">Create Blog</a>
+            <a href="manage.html">Manage Blogs</a>
+            <a href="#" onclick="logout()">Logout</a>
+          </div>
+        </div>
+        <button class="hamburger" onclick="toggleMenu()">☰</button>
+      </nav>
+    </div>
+    <!-- Mobile Menu -->
+    <div class="hamburger-menu" id="navMenu">
+      <a href="#" onclick="fetchAndRenderBlogs('Politics')">Politics</a>
+      <a href="#" onclick="fetchAndRenderBlogs('Lifestyle')">Lifestyle</a>
+      <a href="#" onclick="fetchAndRenderBlogs('Entertainment')">Entertainment</a>
+    </div>
+  </header>
+
+  <main class="main container">
+    <section class="intro">
+      <h1 class="main-title">Welcome to Blog Platform</h1>
+    </section>
+    <section class="blogs-section">
+      <h2 class="section-title">All Blogs</h2>
+      <div id="blogsList" class="blog-grid"></div>
+    </section>
+  </main>
+
+  <script src="/script.js"></script>
 </body>
 </html>
