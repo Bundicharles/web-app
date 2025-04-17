@@ -86,7 +86,7 @@
   }
   
   .hamburger div {
-    width: 25px;
+    width: 5px;
     height: 3px;
     background-color: var(--coffee-bean);
     margin: 4px 0;
@@ -96,7 +96,7 @@
   /* Dropdown Menus */
   .profile-dropdown, .category-dropdown {
     position: absolute;
-    top: 60px;
+    top: 10px;
     right: 2rem;
     background-color: var(--vanilla);
     border: 1px solid var(--cappuccino);
@@ -114,8 +114,8 @@
   
   .profile-icon, .categories-icon {
     cursor: pointer;
-    width: 32px;
-    height: 32px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background-color: var(--mocha);
     display: flex;
