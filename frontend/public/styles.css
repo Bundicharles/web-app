@@ -142,7 +142,7 @@ nav {
   width: 100%; /* Ensures it scales dynamically */
   margin: 0 auto;
   padding: 3rem 2rem;
-  background-color: #F5F5F5; /* Off-white for a clean content area */
+  background-color: #131212; /* Off-white for a clean content area */
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
@@ -157,14 +157,14 @@ h1 {
 }
 
 h2 {
-  color: #6D3914; /* Coffee - warm secondary heading */
+  color: #0cf13e; /* Coffee - warm secondary heading */
   margin-bottom: 2rem;
   font-size: 2rem;
   font-family: 'Playfair Display', serif;
 }
 
 h3 {
-  color: #A87343; /* Caramel - warm accent for smaller headings */
+  color: #0f0bf8; /* Caramel - warm accent for smaller headings */
   margin-bottom: 1rem;
   font-family: 'Playfair Display', serif;
 }
@@ -178,7 +178,7 @@ h3 {
 }
 
 .blog-card {
-  background-color: #D7BDA6; /* Vanilla - soft card background */
+  background-color: #ddf50b; /* Vanilla - soft card background */
   padding: 1.5rem; /* Reduced padding slightly to fit more content */
   border-radius: 10px;
   border: 1px solid #B7957F; /* Almond - subtle border */
