@@ -9,36 +9,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:wght@400;700&family=Roboto:wght@400&display=swap');
 
 body {
-  background-color:#131212;  /* Vanilla - a soft, warm background */
-  color: #210c83; /* Espresso - a rich, dark text color */
+  background-color: #D7BDA6; /* Vanilla - a soft, warm background */
+  color: #403208; /* Espresso - a rich, dark text color */
   line-height: 1.8;
   font-family: 'Lora', serif; /* Classic serif font for body text */
 }
 
 /* Header */
 header {
-  background-color:#343434;
-  padding: 0.2rem 1rem; /* Reduced padding for a narrower header */
+  background-color: #A87343; /* Caramel - warm and inviting */
+  padding: 1rem 2rem; /* Reduced vertical padding from 1.5rem to 1rem for a narrower navbar */
   display: flex;
-  justify-content: space-between; /* Ensure logo and hamburger are on opposite ends */
+  justify-content: space-between;
   align-items: center;
-  border-bottom: 3px solid #6D3914;
+  border-bottom: 3px solid #6D3914; /* Coffee - a subtle, rich border */
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
 .logo {
-  max-width: 80px; /* Slightly reduced logo size to match the narrower header */
+  max-width: 150px; /* Slightly reduced logo size to match the narrower header */
   height: auto;
-  order: 1; /* Ensure logo is on the left */
 }
 
 nav {
   display: flex;
   align-items: center;
-  order: 2; /* Nav comes before hamburger */
 }
 
 .nav-links {
@@ -85,7 +83,6 @@ nav {
   background-color: #403208; /* Espresso - darker on hover */
 }
 
-/* Profile Dropdown */
 .profile {
   position: relative;
   display: none; /* Hidden by default, shown if logged in */
@@ -95,7 +92,6 @@ nav {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #A87343;
   border: 2px solid #D7BDA6; /* Vanilla border */
   cursor: pointer;
 }
@@ -125,83 +121,6 @@ nav {
   background-color: #6D3914; /* Coffee - darker hover */
 }
 
-/* Categories Dropdown (for the icon) */
-.categories {
-  position: relative;
-}
-
-.categories-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #A87343;
-  border: 2px solid #D7BDA6; /* Vanilla border */
-  cursor: pointer;
-}
-
-.categories-menu {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  background-color: #A87343; /* Caramel - warm dropdown */
-  border: 1px solid #6D3914; /* Coffee - subtle border */
-  border-radius: 5px;
-  padding: 0.5rem;
-  z-index: 1000;
-  min-width: 150px;
-}
-
-.categories-menu a {
-  display: block;
-  color: #D7BDA6; /* Vanilla - light text */
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  font-family: 'Lora', serif;
-  transition: background-color 0.3s ease;
-}
-
-.categories-menu a:hover {
-  background-color: #6D3914; /* Coffee - darker hover */
-}
-
-/* Hamburger Menu */
-.hamburger {
-  display: none; /* Hidden by default, shown in mobile */
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #D7BDA6;
-  cursor: pointer;
-  order: 3; /* Ensure hamburger is on the right */
-}
-
-.hamburger-menu {
-  display: none; /* Hidden by default, shown when toggled */
-  position: absolute;
-  top: calc(100% + 0.5rem); /* Slightly below the header */
-  right: 0; /* Align to the right, under the hamburger */
-  background-color: #A87343; /* Caramel - warm dropdown */
-  border: 1px solid #6D3914; /* Coffee - subtle border */
-  border-radius: 5px;
-  padding: 0.5rem;
-  z-index: 1000;
-  min-width: 150px;
-}
-
-/* Remove the .active class since we're toggling display directly */
-.hamburger-menu a {
-  display: block;
-  color: #D7BDA6; /* Vanilla - light text */
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  font-family: 'Lora', serif;
-  transition: background-color 0.3s ease;
-}
-
-.hamburger-menu a:hover {
-  background-color: #6D3914; /* Coffee - darker hover */
-}
-
 /* Hero Section */
 .hero {
   width: 100%;
@@ -223,13 +142,13 @@ nav {
   width: 100%; /* Ensures it scales dynamically */
   margin: 0 auto;
   padding: 3rem 2rem;
-  background-color: #d3d8cb; /* Off-white for a clean content area */
+  background-color: #F5F5F5; /* Off-white for a clean content area */
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
 h1 {
-  color: #6D3914; /* Espresso - rich heading color */
+  color: #403208; /* Espresso - rich heading color */
   margin-bottom: 1.5rem;
   font-size: 3rem;
   font-family: 'Playfair Display', serif; /* Elegant heading font */
@@ -238,14 +157,14 @@ h1 {
 }
 
 h2 {
-  color: #0920ec; /* Coffee - warm secondary heading */
+  color: #6D3914; /* Coffee - warm secondary heading */
   margin-bottom: 2rem;
   font-size: 2rem;
   font-family: 'Playfair Display', serif;
 }
 
 h3 {
-  color: #0e11dd; /* Caramel - warm accent for smaller headings */
+  color: #A87343; /* Caramel - warm accent for smaller headings */
   margin-bottom: 1rem;
   font-family: 'Playfair Display', serif;
 }
@@ -259,7 +178,7 @@ h3 {
 }
 
 .blog-card {
-  background-color: #ff6600; /* created blog card*/
+  background-color: #D7BDA6; /* Vanilla - soft card background */
   padding: 1.5rem; /* Reduced padding slightly to fit more content */
   border-radius: 10px;
   border: 1px solid #B7957F; /* Almond - subtle border */
@@ -273,7 +192,7 @@ h3 {
 }
 
 .blog-card h3 a {
-  color: #faf6ea; /* Espresso - rich link color */
+  color: #403208; /* Espresso - rich link color */
   text-decoration: none;
   font-family: 'Playfair Display', serif;
   font-size: 1.4rem; /* Slightly smaller for better fit */
@@ -309,7 +228,7 @@ h3 {
   gap: 1.5rem;
   max-width: 700px;
   margin: 0 auto;
-  background-color: #ccc6b5; /* Vanilla - warm form background */
+  background-color: #D7BDA6; /* Vanilla - warm form background */
   padding: 2rem;
   border-radius: 10px;
   border: 1px solid #B7957F; /* Almond - subtle border */
@@ -390,7 +309,7 @@ h3 {
   text-align: left; /* Ensure the title is left-aligned */
   font-size: 2.5rem; /* Slightly smaller for better proportion */
   margin-bottom: 1rem;
-  color: #03f337; /* Espresso - rich heading color */
+  color: #403208; /* Espresso - rich heading color */
   font-family: 'Playfair Display', serif;
 }
 
@@ -405,7 +324,7 @@ h3 {
 .blog-detail img {
   width: 100%; /* Make the image span the full width of the container */
   height: auto; /* Maintain aspect ratio */
-  max-height: 500px; /* Limit the height to avoid overly tall images */
+  max-height: 400px; /* Limit the height to avoid overly tall images */
   object-fit: cover; /* Ensure the image scales nicely */
   border-radius: 5px; /* Add a slight border radius for elegance */
   margin: 1.5rem 0; /* Add spacing above and below the image */
@@ -450,7 +369,6 @@ h3 {
   height: 120px;
   resize: vertical;
 }
-
 .comment {
   margin-bottom: 1.5rem;
   padding: 1rem;
@@ -572,48 +490,52 @@ h3 {
 }
 
 @media (max-width: 600px) {
-  /* Hamburger menu styles for index.html */
-  .hamburger {
-      display: block; /* Show hamburger in mobile */
+  header {
+      flex-direction: column;
+      padding: 0.75rem; /* Further reduced padding for mobile */
+  }
+
+  .logo {
+      max-width: 120px; /* Smaller logo on mobile */
+  }
+
+  nav {
+      margin-top: 0.5rem;
+      flex-direction: column;
+      align-items: flex-start;
   }
 
   .nav-links {
-      display: none; /* Hide the nav links in mobile mode */
+      flex-direction: column;
+      align-items: flex-start;
   }
 
-  /* Specific adjustments for index.html */
-  body:has(main > .container > .blogs-section) header {
-      padding: 0.3rem 0.5rem; /* Reduced padding for index.html */
+  .nav-links li {
+      margin: 0.5rem 0;
   }
 
-  body:has(main > .container > .blogs-section) .logo {
-      max-width: 80px; /* Smaller logo for index.html */
+  .auth-buttons {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
   }
 
-  body:has(main > .container > .blogs-section) nav {
-      margin-top: 0; /* Remove margin to reduce space */
+  .auth-buttons button {
+      margin: 0.5rem 0;
+      width: 100%;
   }
 
-  /* Keep navbar size for other pages */
-  body:not(:has(main > .container > .blogs-section)) header {
-      padding: 0.5rem 1rem; /* Original padding for other pages */
-  }
-
-  body:not(:has(main > .container > .blogs-section)) .logo {
-      max-width: 150px; /* Original logo size for other pages */
-  }
-
-  body:not(:has(main > .container > .blogs-section)) nav {
-      margin-top: 0.2rem; /* Original margin for other pages */
+  .profile {
+      margin-top: 0.5rem;
   }
 
   .container {
-      max-width: 95%;
+      max-width: 95%; /* Almost full width on small screens */
       padding: 1.5rem;
   }
 
   .blog-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr; /* Single column on small screens */
       gap: 1.5rem;
   }
 
@@ -629,13 +551,12 @@ h3 {
   h2 {
       font-size: 1.5rem;
   }
-
   .comment {
       padding: 0.75rem;
   }
 
   .comment .replies {
-      margin-left: 1rem;
+      margin-left: 1rem; /* Less indentation on mobile */
   }
 
   .reply-form {
