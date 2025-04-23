@@ -9,7 +9,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:wght@400;700&family=Roboto:wght@400&display=swap');
 
 body {
-  background-color: #D7BDA6; /* Vanilla - a soft, warm background */
+  background-color: #130901; /* Vanilla - a soft, warm background */
   color: #403208; /* Espresso - a rich, dark text color */
   line-height: 1.8;
   font-family: 'Lora', serif; /* Classic serif font for body text */
@@ -17,7 +17,7 @@ body {
 
 /* Header */
 header {
-  background-color: #A87343; /* Caramel - warm and inviting */
+  background-color: #3704f0; /* Caramel - warm and inviting */
   padding: 1rem 2rem; /* Reduced vertical padding from 1.5rem to 1rem for a narrower navbar */
   display: flex;
   justify-content: space-between;
