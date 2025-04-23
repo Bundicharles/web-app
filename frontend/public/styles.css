@@ -142,7 +142,7 @@ nav {
   width: 100%; /* Ensures it scales dynamically */
   margin: 0 auto;
   padding: 3rem 2rem;
-  background-color: #131212; /* Off-white for a clean content area */
+  background-color: #1e07f3; /* Off-white for a clean content area */
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
@@ -192,7 +192,7 @@ h3 {
 }
 
 .blog-card h3 a {
-  color: #403208; /* Espresso - rich link color */
+  color: #54f5428; /* Espresso - rich link color */
   text-decoration: none;
   font-family: 'Playfair Display', serif;
   font-size: 1.4rem; /* Slightly smaller for better fit */
