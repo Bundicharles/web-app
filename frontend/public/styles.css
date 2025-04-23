@@ -142,7 +142,7 @@ nav {
   width: 100%; /* Ensures it scales dynamically */
   margin: 0 auto;
   padding: 3rem 2rem;
-  background-color:  #ffffff; /* Off-white for a clean content area */
+  background-color:  #645c5c; /* Off-white for a clean content area */
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
@@ -157,7 +157,7 @@ h1 {
 }
 
 h2 {
-  color: #0cf13e; /* Coffee - warm secondary heading */
+  color: #f75308; /* Coffee - warm secondary heading */
   margin-bottom: 2rem;
   font-size: 2rem;
   font-family: 'Playfair Display', serif;
@@ -204,7 +204,7 @@ h3 {
 }
 
 .blog-card p {
-  color: #403208; /* Espresso - readable text */
+  color: #5f4905; /* Espresso - readable text */
   font-size: 0.95rem; /* Slightly smaller for better fit */
   margin-top: 0.75rem;
   font-family: 'Lora', serif;
@@ -228,7 +228,7 @@ h3 {
   gap: 1.5rem;
   max-width: 700px;
   margin: 0 auto;
-  background-color: #D7BDA6; /* Vanilla - warm form background */
+  background-color: #0f0801; /* Vanilla - warm form background */
   padding: 2rem;
   border-radius: 10px;
   border: 1px solid #B7957F; /* Almond - subtle border */
@@ -298,10 +298,10 @@ h3 {
 .blog-detail {
   max-width: 800px;
   margin: 0 auto;
-  background-color: #D7BDA6; /* Vanilla - warm background */
+  background-color: #e26e09; /* Vanilla - warm background */
   padding: 2rem;
   border-radius: 10px;
-  border: 1px solid #B7957F; /* Almond - subtle border */
+  border: 1px solid #f16305; /* Almond - subtle border */
   text-align: left; /* Override any centering, align text to the left */
 }
 
