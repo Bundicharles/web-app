@@ -9,20 +9,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:wght@400;700&family=Roboto:wght@400&display=swap');
 
 body {
-  background-color: #faf5f1; /* Vanilla - a soft, warm background */
-  color: #403208; /* Espresso - a rich, dark text color */
+  background-color:  #f8f9fa; /* Vanilla - a soft, warm background */
+  color: #2c2c2c; /* Espresso - a rich, dark text color */
   line-height: 1.8;
   font-family: 'Lora', serif; /* Classic serif font for body text */
 }
 
 /* Header */
 header {
-  background-color: #111111; /* Caramel - warm and inviting */
+  background-color: #2c3e50;/* Caramel - warm and inviting */
   padding: 1rem 2rem; /* Reduced vertical padding from 1.5rem to 1rem for a narrower navbar */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 3px solid #6D3914; /* Coffee - a subtle, rich border */
+  border-bottom: 3px solid #bfa980;/* Coffee - a subtle, rich border */
   position: sticky;
   top: 0;
   z-index: 100;
@@ -50,7 +50,7 @@ nav {
 }
 
 .nav-links a {
-  color: #D7BDA6; /* Vanilla - light and elegant */
+  color: #ffffff; /* Vanilla - light and elegant */
   text-decoration: none;
   font-family: 'Playfair Display', serif; /* Elegant font for nav */
   font-size: 1.1rem;
@@ -59,7 +59,7 @@ nav {
 }
 
 .nav-links a:hover {
-  color: #B7957F; /* Almond - a soft hover effect */
+  color: #bfa980; /* Almond - a soft hover effect */
   text-decoration: underline;
 }
 
@@ -68,9 +68,9 @@ nav {
 }
 
 .auth-buttons button {
-  background-color: #6D3914; /* Coffee - a deep, rich button color */
+  background-color: #bfa980;/* Coffee - a deep, rich button color */
   color: #D7BDA6; /* Vanilla - light text */
-  border: 1px solid #403208; /* Espresso - subtle border */
+  border: 1px solid  #2c2c2c; /* Espresso - subtle border */
   padding: 0.5rem 1.5rem;
   border-radius: 5px;
   cursor: pointer;
@@ -80,7 +80,7 @@ nav {
 }
 
 .auth-buttons button:hover {
-  background-color: #403208; /* Espresso - darker on hover */
+  background-color:  #9d8d6a; /* Espresso - darker on hover */
 }
 
 .profile {
@@ -142,7 +142,7 @@ nav {
   width: 100%; /* Ensures it scales dynamically */
   margin: 0 auto;
   padding: 3rem 2rem;
-  background-color: #1e07f3; /* Off-white for a clean content area */
+  background-color:  #ffffff; /* Off-white for a clean content area */
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
