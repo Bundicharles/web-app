@@ -30,7 +30,7 @@ header {
 }
 
 .logo {
-  max-width: 150px; /* Slightly reduced logo size to match the narrower header */
+  max-width: 10px; /* Slightly reduced logo size to match the narrower header */
   height: auto;
 }
 
@@ -89,8 +89,8 @@ nav {
 }
 
 .profile-icon {
-  width: 40px;
-  height: 40px;
+  width: 2%;
+  height: 10px;
   border-radius: 50%;
   border: 2px solid #D7BDA6; /* Vanilla border */
   cursor: pointer;
