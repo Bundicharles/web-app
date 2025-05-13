@@ -1,13 +1,16 @@
-const API_URL = 'https://web-blog-afow.vercel.app';
+const API_URL = 'https://blog-platform-5u46.vercel.app';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded and script running');
 
     // Profile Dropdown
     window.toggleProfileMenu = function () {
+        console.log('toggleProfileMenu called');
         const profileMenu = document.getElementById('profileMenu');
         if (profileMenu) {
+            console.log('Profile menu found, current display:', profileMenu.style.display);
             profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
+            console.log('New display:', profileMenu.style.display);
         } else {
             console.error('Profile menu element not found');
         }
@@ -15,25 +18,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Categories Dropdown for the icon
     window.toggleCategoriesMenu = function () {
+        console.log('toggleCategoriesMenu called');
         const categoriesMenu = document.getElementById('categoriesMenu');
         if (categoriesMenu) {
+            console.log('Categories menu found, current display:', categoriesMenu.style.display);
             categoriesMenu.style.display = categoriesMenu.style.display === 'block' ? 'none' : 'block';
+            console.log('New display:', categoriesMenu.style.display);
         } else {
             console.error('Categories menu element not found');
         }
     };
 
     // Hamburger Menu Toggle
-    window.toggleMenu = function () {
-        const navMenu = document.getElementById('navMenu');
-        if (navMenu) {
-            navMenu.style.display = navMenu.style.display === 'block' ? 'none' : 'block';
-        } else {
-            console.error('Nav menu element not found');
-        }
-    };
+window.toggleMenu = function () {
+    console.log('toggleMenu called');
+    const navMenu = document.getElementById('navMenu');
+    if (navMenu) {
+        console.log('Nav menu found, current display:', navMenu.style.display);
+        navMenu.style.display = navMenu.style.display === 'block' ? 'none' : 'block';
+        console.log('New display:', navMenu.style.display);
+    } else {
+        console.error('Nav menu element not found');
+    }
+};
 
     window.logout = function () {
+        console.log('Logout called');
         localStorage.removeItem('token');
         window.location.href = 'index.html';
     };
@@ -43,25 +53,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileElement = document.querySelector('.profile');
     const authButtons = document.getElementById('authButtons');
     if (token) {
-        if (profileElement) profileElement.style.display = 'block';
-        if (authButtons) authButtons.style.display = 'none';
+        console.log('User is logged in, token:', token);
+        if (profileElement) {
+            profileElement.style.display = 'block';
+            console.log('Profile element shown');
+        }
+        if (authButtons) {
+            authButtons.style.display = 'none';
+            console.log('Auth buttons hidden');
+        }
         const commentForm = document.getElementById('commentForm');
         if (commentForm) commentForm.style.display = 'block';
     } else {
-        if (profileElement) profileElement.style.display = 'none';
-        if (authButtons) authButtons.style.display = 'block';
+        console.log('No token found, showing login and signup buttons');
+        if (profileElement) {
+            profileElement.style.display = 'none';
+        }
+        if (authButtons) {
+            authButtons.style.display = 'block';
+        }
     }
 
-    // Login/Signup redirection
+    // Attach event listeners for login/signup
     document.getElementById('loginBtn')?.addEventListener('click', () => {
+        console.log('Login button clicked');
         window.location.href = 'login.html';
     });
 
     document.getElementById('signupBtn')?.addEventListener('click', () => {
+        console.log('Signup button clicked');
         window.location.href = 'signup.html';
     });
 
-    // Initialize Quill Editor
+    // Initialize Quill Editor on create.html
     if (window.location.pathname.endsWith('create.html')) {
         if (typeof Quill !== 'undefined') {
             const quill = new Quill('#editor', {
@@ -76,10 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     ]
                 }
             });
+            console.log('Quill editor initialized');
+        } else {
+            console.error('Quill library not loaded');
         }
     }
 
-    // Signup Handler
+    // Handle Sign Up
     if (window.location.pathname.endsWith('signup.html')) {
         const signupForm = document.getElementById('signupForm');
         if (signupForm) {
@@ -105,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Login Handler
+    // Handle Login
     if (window.location.pathname.endsWith('login.html')) {
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
@@ -135,18 +162,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Create Blog Handler
+    // Handle Create Blog with Quill Content
     if (window.location.pathname.endsWith('create.html')) {
         const createBlogForm = document.getElementById('createBlogForm');
         if (createBlogForm) {
             createBlogForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                console.log('Create Blog form submitted');
 
                 const title = document.getElementById('title').value;
                 const category = document.getElementById('category').value;
                 const content = document.querySelector('.ql-editor')?.innerHTML || '';
-                const token = localStorage.getItem('token');
 
+                const token = localStorage.getItem('token');
                 if (!token) {
                     alert('No token found. Please log in again.');
                     window.location.href = 'login.html';
@@ -163,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         body: JSON.stringify({ title, category, content })
                     });
                     const data = await response.json();
-
                     if (response.status === 403 && data.message === 'Invalid token') {
                         alert('Your session has expired. Please log in again.');
                         localStorage.removeItem('token');
@@ -181,17 +208,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Fetch and Display Blogs (oldest first)
+    // Fetch and Display Blogs
     if (window.location.pathname.endsWith('index.html')) {
         window.fetchAndRenderBlogs = async function (category = '') {
             try {
                 const response = await fetch(`${API_URL}/api/blogs${category ? `?category=${category}` : ''}`);
                 const blogs = await response.json();
+                console.log('Fetched Blogs:', blogs);
                 const blogsList = document.getElementById('blogsList');
-
-                // Sort by date ascending (oldest first)
-                blogs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
                 blogsList.innerHTML = blogs.map(blog => `
                     <div class="blog-card">
                         <h3><a href="blog.html?id=${blog.id}">${blog.title}</a></h3>
@@ -227,8 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('likeCount').textContent = blog.likes || 0;
 
                 const commentsList = document.getElementById('commentsList');
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('token'); // Check if user is logged in
 
+                // Render comments and their replies
                 const renderComments = (comments, parentElement) => {
                     comments.forEach(comment => {
                         const commentElement = document.createElement('div');
@@ -247,9 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="replies"></div>
                         `;
 
+                        // Add event listener for the "Reply" button
                         const replyBtn = commentElement.querySelector(`#replyBtn-${comment.id}`);
                         const replyForm = commentElement.querySelector(`#replyForm-${comment.id}`);
-
                         replyBtn.addEventListener('click', () => {
                             if (!token) {
                                 alert('Please log in to reply to comments.');
@@ -259,6 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
                         });
 
+                        // Handle reply form submission
                         replyForm.addEventListener('submit', async (e) => {
                             e.preventDefault();
                             const replyContent = replyForm.querySelector('textarea').value;
@@ -275,18 +301,20 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const data = await response.json();
                                 alert(data.message);
                                 if (response.ok) {
-                                    replyForm.querySelector('textarea').value = '';
-                                    replyForm.style.display = 'none';
-                                    fetchBlog();
+                                    replyForm.querySelector('textarea').value = ''; // Clear the textarea
+                                    replyForm.style.display = 'none'; // Hide the form
+                                    fetchBlog(); // Refresh the comments
                                 }
                             } catch (error) {
                                 console.error('Error adding reply:', error);
-                                alert('Failed to add reply.');
+                                alert('Failed to add reply. Check the console for details.');
                             }
                         });
 
+                        // Append the comment to the parent element
                         parentElement.appendChild(commentElement);
 
+                        // Render replies if they exist
                         if (comment.replies && comment.replies.length > 0) {
                             const repliesContainer = commentElement.querySelector('.replies');
                             renderComments(comment.replies, repliesContainer);

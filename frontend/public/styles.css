@@ -9,34 +9,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:wght@400;700&family=Roboto:wght@400&display=swap');
 
 body {
-  background-color:  #121313; /* Vanilla - a soft, warm background */
-  color: #2c2c2c; /* Espresso - a rich, dark text color */
+  background-color: #D7BDA6; /* Vanilla - a soft, warm background */
+  color: #403208; /* Espresso - a rich, dark text color */
   line-height: 1.8;
   font-family: 'Lora', serif; /* Classic serif font for body text */
 }
 
 /* Header */
 header {
-  background-color: #2c3e50;/* Caramel - warm and inviting */
-  padding: 1rem 2rem; /* Reduced vertical padding from 1.5rem to 1rem for a narrower navbar */
+  background-color: #A87343;
+  padding: 0.5rem 1rem; /* Reduced padding for a narrower header */
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* Ensure logo and hamburger are on opposite ends */
   align-items: center;
-  border-bottom: 3px solid #bfa980;/* Coffee - a subtle, rich border */
+  border-bottom: 3px solid #6D3914;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
-  max-width: 10px; /* Slightly reduced logo size to match the narrower header */
+  max-width: 150px; /* Slightly reduced logo size to match the narrower header */
   height: auto;
+  order: 1; /* Ensure logo is on the left */
 }
 
 nav {
   display: flex;
   align-items: center;
+  order: 2; /* Nav comes before hamburger */
 }
 
 .nav-links {
@@ -50,7 +52,7 @@ nav {
 }
 
 .nav-links a {
-  color: #ffffff; /* Vanilla - light and elegant */
+  color: #D7BDA6; /* Vanilla - light and elegant */
   text-decoration: none;
   font-family: 'Playfair Display', serif; /* Elegant font for nav */
   font-size: 1.1rem;
@@ -59,7 +61,7 @@ nav {
 }
 
 .nav-links a:hover {
-  color: #bfa980; /* Almond - a soft hover effect */
+  color: #B7957F; /* Almond - a soft hover effect */
   text-decoration: underline;
 }
 
@@ -68,9 +70,9 @@ nav {
 }
 
 .auth-buttons button {
-  background-color: #bfa980;/* Coffee - a deep, rich button color */
+  background-color: #6D3914; /* Coffee - a deep, rich button color */
   color: #D7BDA6; /* Vanilla - light text */
-  border: 1px solid  #2c2c2c; /* Espresso - subtle border */
+  border: 1px solid #403208; /* Espresso - subtle border */
   padding: 0.5rem 1.5rem;
   border-radius: 5px;
   cursor: pointer;
@@ -80,17 +82,18 @@ nav {
 }
 
 .auth-buttons button:hover {
-  background-color:  #9d8d6a; /* Espresso - darker on hover */
+  background-color: #403208; /* Espresso - darker on hover */
 }
 
+/* Profile Dropdown */
 .profile {
   position: relative;
   display: none; /* Hidden by default, shown if logged in */
 }
 
 .profile-icon {
-  width: 2%;
-  height: 10px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 2px solid #D7BDA6; /* Vanilla border */
   cursor: pointer;
@@ -121,6 +124,82 @@ nav {
   background-color: #6D3914; /* Coffee - darker hover */
 }
 
+/* Categories Dropdown (for the icon) */
+.categories {
+  position: relative;
+}
+
+.categories-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #D7BDA6; /* Vanilla border */
+  cursor: pointer;
+}
+
+.categories-menu {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background-color: #A87343; /* Caramel - warm dropdown */
+  border: 1px solid #6D3914; /* Coffee - subtle border */
+  border-radius: 5px;
+  padding: 0.5rem;
+  z-index: 1000;
+  min-width: 150px;
+}
+
+.categories-menu a {
+  display: block;
+  color: #D7BDA6; /* Vanilla - light text */
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  font-family: 'Lora', serif;
+  transition: background-color 0.3s ease;
+}
+
+.categories-menu a:hover {
+  background-color: #6D3914; /* Coffee - darker hover */
+}
+
+/* Hamburger Menu */
+.hamburger {
+  display: none; /* Hidden by default, shown in mobile */
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #D7BDA6;
+  cursor: pointer;
+  order: 3; /* Ensure hamburger is on the right */
+}
+
+.hamburger-menu {
+  display: none; /* Hidden by default, shown when toggled */
+  position: absolute;
+  top: calc(100% + 0.5rem); /* Slightly below the header */
+  right: 0; /* Align to the right, under the hamburger */
+  background-color: #A87343; /* Caramel - warm dropdown */
+  border: 1px solid #6D3914; /* Coffee - subtle border */
+  border-radius: 5px;
+  padding: 0.5rem;
+  z-index: 1000;
+  min-width: 150px;
+}
+
+/* Remove the .active class since we're toggling display directly */
+.hamburger-menu a {
+  display: block;
+  color: #D7BDA6; /* Vanilla - light text */
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  font-family: 'Lora', serif;
+  transition: background-color 0.3s ease;
+}
+
+.hamburger-menu a:hover {
+  background-color: #6D3914; /* Coffee - darker hover */
+}
+
 /* Hero Section */
 .hero {
   width: 100%;
@@ -142,13 +221,13 @@ nav {
   width: 100%; /* Ensures it scales dynamically */
   margin: 0 auto;
   padding: 3rem 2rem;
-  background-color:  #645c5c; /* Off-white for a clean content area */
+  background-color: #F5F5F5; /* Off-white for a clean content area */
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
 h1 {
-  color: #0920ec; /* Espresso - rich heading color */
+  color: #403208; /* Espresso - rich heading color */
   margin-bottom: 1.5rem;
   font-size: 3rem;
   font-family: 'Playfair Display', serif; /* Elegant heading font */
@@ -157,14 +236,14 @@ h1 {
 }
 
 h2 {
-  color: #f75308; /* Coffee - warm secondary heading */
+  color: #6D3914; /* Coffee - warm secondary heading */
   margin-bottom: 2rem;
   font-size: 2rem;
   font-family: 'Playfair Display', serif;
 }
 
 h3 {
-  color: #0f0bf8; /* Caramel - warm accent for smaller headings */
+  color: #A87343; /* Caramel - warm accent for smaller headings */
   margin-bottom: 1rem;
   font-family: 'Playfair Display', serif;
 }
@@ -178,7 +257,7 @@ h3 {
 }
 
 .blog-card {
-  background-color: #ddf50b; /* Vanilla - soft card background */
+  background-color: #D7BDA6; /* Vanilla - soft card background */
   padding: 1.5rem; /* Reduced padding slightly to fit more content */
   border-radius: 10px;
   border: 1px solid #B7957F; /* Almond - subtle border */
@@ -192,7 +271,7 @@ h3 {
 }
 
 .blog-card h3 a {
-  color: #b9560f;/* Espresso - rich link color */
+  color: #403208; /* Espresso - rich link color */
   text-decoration: none;
   font-family: 'Playfair Display', serif;
   font-size: 1.4rem; /* Slightly smaller for better fit */
@@ -204,7 +283,7 @@ h3 {
 }
 
 .blog-card p {
-  color: #5f4905; /* Espresso - readable text */
+  color: #403208; /* Espresso - readable text */
   font-size: 0.95rem; /* Slightly smaller for better fit */
   margin-top: 0.75rem;
   font-family: 'Lora', serif;
@@ -228,7 +307,7 @@ h3 {
   gap: 1.5rem;
   max-width: 700px;
   margin: 0 auto;
-  background-color: #0f0801; /* Vanilla - warm form background */
+  background-color: #D7BDA6; /* Vanilla - warm form background */
   padding: 2rem;
   border-radius: 10px;
   border: 1px solid #B7957F; /* Almond - subtle border */
@@ -298,10 +377,10 @@ h3 {
 .blog-detail {
   max-width: 800px;
   margin: 0 auto;
-  background-color: #e26e09; /* Vanilla - warm background */
+  background-color: #D7BDA6; /* Vanilla - warm background */
   padding: 2rem;
   border-radius: 10px;
-  border: 1px solid #f16305; /* Almond - subtle border */
+  border: 1px solid #B7957F; /* Almond - subtle border */
   text-align: left; /* Override any centering, align text to the left */
 }
 
@@ -324,11 +403,10 @@ h3 {
 .blog-detail img {
   width: 100%; /* Make the image span the full width of the container */
   height: auto; /* Maintain aspect ratio */
-  max-height: none; /* Limit the height to avoid overly tall images */
-  object-fit: contain; /* Ensure the image scales nicely */
+  max-height: 400px; /* Limit the height to avoid overly tall images */
+  object-fit: cover; /* Ensure the image scales nicely */
   border-radius: 5px; /* Add a slight border radius for elegance */
   margin: 1.5rem 0; /* Add spacing above and below the image */
-  display: block;
 }
 
 .blog-detail p {
@@ -370,6 +448,7 @@ h3 {
   height: 120px;
   resize: vertical;
 }
+
 .comment {
   margin-bottom: 1.5rem;
   padding: 1rem;
@@ -491,52 +570,48 @@ h3 {
 }
 
 @media (max-width: 600px) {
-  header {
-      flex-direction: column;
-      padding: 0.75rem; /* Further reduced padding for mobile */
-  }
-
-  .logo {
-      max-width: 120px; /* Smaller logo on mobile */
-  }
-
-  nav {
-      margin-top: 0.5rem;
-      flex-direction: column;
-      align-items: flex-start;
+  /* Hamburger menu styles for index.html */
+  .hamburger {
+      display: block; /* Show hamburger in mobile */
   }
 
   .nav-links {
-      flex-direction: column;
-      align-items: flex-start;
+      display: none; /* Hide the nav links in mobile mode */
   }
 
-  .nav-links li {
-      margin: 0.5rem 0;
+  /* Specific adjustments for index.html */
+  body:has(main > .container > .blogs-section) header {
+      padding: 0.3rem 0.5rem; /* Reduced padding for index.html */
   }
 
-  .auth-buttons {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
+  body:has(main > .container > .blogs-section) .logo {
+      max-width: 80px; /* Smaller logo for index.html */
   }
 
-  .auth-buttons button {
-      margin: 0.5rem 0;
-      width: 100%;
+  body:has(main > .container > .blogs-section) nav {
+      margin-top: 0; /* Remove margin to reduce space */
   }
 
-  .profile {
-      margin-top: 0.5rem;
+  /* Keep navbar size for other pages */
+  body:not(:has(main > .container > .blogs-section)) header {
+      padding: 0.5rem 1rem; /* Original padding for other pages */
+  }
+
+  body:not(:has(main > .container > .blogs-section)) .logo {
+      max-width: 150px; /* Original logo size for other pages */
+  }
+
+  body:not(:has(main > .container > .blogs-section)) nav {
+      margin-top: 0.2rem; /* Original margin for other pages */
   }
 
   .container {
-      max-width: 95%; /* Almost full width on small screens */
+      max-width: 95%;
       padding: 1.5rem;
   }
 
   .blog-grid {
-      grid-template-columns: 1fr; /* Single column on small screens */
+      grid-template-columns: 1fr;
       gap: 1.5rem;
   }
 
@@ -552,12 +627,13 @@ h3 {
   h2 {
       font-size: 1.5rem;
   }
+
   .comment {
       padding: 0.75rem;
   }
 
   .comment .replies {
-      margin-left: 1rem; /* Less indentation on mobile */
+      margin-left: 1rem;
   }
 
   .reply-form {
