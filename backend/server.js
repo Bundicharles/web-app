@@ -12,20 +12,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = 'your-secret-key';
 
-// Middleware
+// CORS Middleware Configuration
 app.use(cors({
-    origin: 'https://web-blog-wheat.vercel.app',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-  }));
-  app.options('*', cors({
-    origin: 'https://web-blog-wheat.vercel.app',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-  }));
-  app.use(bodyParser.json({ limit: '100mb' }));
+    origin: 'https://web-blog-wheat.vercel.app', // Allow frontend domain
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    credentials: true // Allow credentials (cookies, authorization headers)
+}));
+
+// Handle preflight requests (CORS)
+app.options('*', cors());
+
+// Middleware
+app.use(bodyParser.json({ limit: '100mb' }));
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -59,8 +58,7 @@ app.get('/uploads/:filename', (req, res) => {
 // Postgres Database Setup
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false,
-        sslmode: 'require' }
+    ssl: { rejectUnauthorized: false, sslmode: 'require' }
 });
 
 // Create tables
@@ -186,15 +184,12 @@ app.post('/api/blogs', authenticateToken, async (req, res) => {
     const author_id = req.user.id;
     const created_at = new Date();
 
-    console.log('Received blog creation request:', { title, content, category, author_id, created_at });
-
     try {
         const result = await pool.query(
             `INSERT INTO blogs (title, content, category, author_id, created_at, views) 
              VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
             [title, content, category, author_id, created_at, 0]
         );
-        console.log('Blog created successfully with ID:', result.rows[0].id);
         res.status(201).json({ id: result.rows[0].id });
     } catch (err) {
         console.error('Error inserting blog into database:', err);
@@ -330,79 +325,6 @@ app.post('/api/blogs/:id/comment', authenticateToken, async (req, res) => {
     } catch (err) {
         console.error('Error adding comment:', err);
         res.status(500).json({ message: 'Error adding comment' });
-    }
-});
-
-// Add a Reply to a Comment
-app.post('/api/blogs/:id/comment/reply', authenticateToken, async (req, res) => {
-    const { id } = req.params;
-    const { content, parent_id } = req.body;
-    const user_id = req.user.id;
-    const created_at = new Date();
-
-    try {
-        const parentResult = await pool.query(
-            `SELECT * FROM comments WHERE id = $1 AND blog_id = $2`,
-            [parent_id, id]
-        );
-        if (parentResult.rows.length === 0) {
-            return res.status(404).json({ message: 'Parent comment not found' });
-        }
-
-        const result = await pool.query(
-            `INSERT INTO comments (blog_id, user_id, content, created_at, parent_id) 
-             VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-            [id, user_id, content, created_at, parent_id]
-        );
-        res.status(201).json({ message: 'Reply added successfully', commentId: result.rows[0].id });
-    } catch (err) {
-        console.error('Error adding reply:', err);
-        res.status(500).json({ message: 'Error adding reply' });
-    }
-});
-
-// Get Blogs by User (for manage.html)
-app.get('/api/user/blogs', authenticateToken, async (req, res) => {
-    const user_id = req.user.id;
-
-    try {
-        const result = await pool.query(
-            `SELECT blogs.*, users.username,
-             (SELECT COUNT(*) FROM likes WHERE likes.blog_id = blogs.id) as likes,
-             (SELECT COUNT(*) FROM comments WHERE comments.blog_id = blogs.id) as comment_count
-             FROM blogs JOIN users ON blogs.author_id = users.id
-             WHERE blogs.author_id = $1
-             ORDER BY blogs.created_at DESC`,
-            [user_id]
-        );
-        res.json(result.rows);
-    } catch (err) {
-        console.error('Error fetching user blogs:', err);
-        res.status(500).json({ message: 'Error fetching blogs' });
-    }
-});
-
-// Delete a Blog
-app.delete('/api/blogs/:id', authenticateToken, async (req, res) => {
-    const { id } = req.params;
-    const user_id = req.user.id;
-
-    try {
-        const blogResult = await pool.query(
-            `SELECT * FROM blogs WHERE id = $1 AND author_id = $2`,
-            [id, user_id]
-        );
-        if (blogResult.rows.length === 0) {
-            return res.status(403).json({ message: 'Unauthorized or blog not found' });
-        }
-
-        await pool.query(`DELETE FROM blogs WHERE id = $1`, [id]);
-        await pool.query(`DELETE FROM likes WHERE blog_id = $1`, [id]);
-        await pool.query(`DELETE FROM comments WHERE blog_id = $1`, [id]);
-        res.json({ message: 'Blog deleted' });
-    } catch (err) {
-        console.error('Error deleting blog:', err);
-        res.status(500).json({ message: 'Error deleting blog' });
     }
 });
 
