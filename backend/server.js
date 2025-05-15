@@ -14,7 +14,7 @@ const SECRET_KEY = 'your-secret-key';
 
 // Allowed origins for CORS
 const allowedOrigins = [
-  'https://blog-platform-jet-zeta.vercel.app',
+  'https://web-blog-afow.vercel.app',
   'https://web-blog-wheat.vercel.app'
 ];
 
