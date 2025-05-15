@@ -14,7 +14,7 @@ const SECRET_KEY = 'your-secret-key';
 
 // CORS Middleware Configuration
 app.use(cors({
-    origin: 'https://web-blog-wheat.vercel.app', // Change this if your frontend is on a different domain
+    origin: 'https://web-blog-wheat.vercel.app', // Change if your frontend domain is different
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
@@ -217,7 +217,7 @@ app.get('/api/blogs', async (req, res) => {
     }
 });
 
-// Get blog by ID
+// Get blog by ID (with comments and likes)
 app.get('/api/blogs/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -285,16 +285,20 @@ app.post('/api/blogs/:id/like', authenticateToken, async (req, res) => {
     }
 });
 
-// Comment on blog
+// Comment on blog (top-level)
 app.post('/api/blogs/:id/comment', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { content } = req.body;
     const user_id = req.user.id;
     const created_at = new Date();
 
+    if (!content || content.trim() === '') {
+        return res.status(400).json({ message: 'Comment content required' });
+    }
+
     try {
         await pool.query(
-            `INSERT INTO comments (blog_id, user_id, content, created_at) VALUES ($1, $2, $3, $4)`,
+            `INSERT INTO comments (blog_id, user_id, content, created_at, parent_id) VALUES ($1, $2, $3, $4, NULL)`,
             [id, user_id, content, created_at]
         );
         res.json({ message: 'Comment added' });
@@ -304,28 +308,28 @@ app.post('/api/blogs/:id/comment', authenticateToken, async (req, res) => {
     }
 });
 
-// ✅ Get blogs by logged-in user
-app.get('/api/user/blogs', authenticateToken, async (req, res) => {
-    const userId = req.user.id;
-    try {
-        const result = await pool.query(
-            `SELECT blogs.*, users.username,
-            (SELECT COUNT(*) FROM likes WHERE likes.blog_id = blogs.id) as likes,
-            (SELECT COUNT(*) FROM comments WHERE comments.blog_id = blogs.id) as comment_count
-            FROM blogs
-            JOIN users ON blogs.author_id = users.id
-            WHERE author_id = $1
-            ORDER BY created_at DESC`,
-            [userId]
-        );
-        res.json(result.rows);
-    } catch (err) {
-        console.error('Error fetching user blogs:', err);
-        res.status(500).json({ message: 'Error fetching user blogs' });
-    }
-});
+// Reply to a comment
+app.post('/api/blogs/:blogId/comment/:commentId/reply', authenticateToken, async (req, res) => {
+    const { blogId, commentId } = req.params;
+    const { content } = req.body;
+    const user_id = req.user.id;
+    const created_at = new Date();
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+    if (!content || content.trim() === '') {
+        return res.status(400).json({ message: 'Reply content required' });
+    }
+
+    try {
+        // Check blog exists
+        const blogCheck = await pool.query('SELECT id FROM blogs WHERE id = $1', [blogId]);
+        if (blogCheck.rowCount === 0) {
+            return res.status(404).json({ message: 'Blog not found' });
+        }
+
+        // Check parent comment exists and belongs to the blog
+        const commentCheck = await pool.query('SELECT id FROM comments WHERE id = $1 AND blog_id = $2', [commentId, blogId]);
+        if (commentCheck.rowCount === 0) {
+            return res.status(404).json({ message: 'Parent comment not found' });
+        }
+
+        await
