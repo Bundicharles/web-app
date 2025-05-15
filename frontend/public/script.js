@@ -1,112 +1,77 @@
 const API_URL = 'https://web-blog-afow.vercel.app';
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded and script running');
-
-    // Profile Dropdown
+    // Toggle profile menu visibility
     window.toggleProfileMenu = function () {
-        console.log('toggleProfileMenu called');
         const profileMenu = document.getElementById('profileMenu');
         if (profileMenu) {
-            console.log('Profile menu found, current display:', profileMenu.style.display);
             profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
-            console.log('New display:', profileMenu.style.display);
-        } else {
-            console.error('Profile menu element not found');
         }
     };
 
-    // Categories Dropdown for the icon
+    // Toggle categories menu visibility
     window.toggleCategoriesMenu = function () {
-        console.log('toggleCategoriesMenu called');
         const categoriesMenu = document.getElementById('categoriesMenu');
         if (categoriesMenu) {
-            console.log('Categories menu found, current display:', categoriesMenu.style.display);
             categoriesMenu.style.display = categoriesMenu.style.display === 'block' ? 'none' : 'block';
-            console.log('New display:', categoriesMenu.style.display);
-        } else {
-            console.error('Categories menu element not found');
         }
     };
 
-    // Hamburger Menu Toggle
+    // Toggle nav menu visibility (hamburger menu)
     window.toggleMenu = function () {
-        console.log('toggleMenu called');
         const navMenu = document.getElementById('navMenu');
         if (navMenu) {
-            console.log('Nav menu found, current display:', navMenu.style.display);
             navMenu.style.display = navMenu.style.display === 'block' ? 'none' : 'block';
-            console.log('New display:', navMenu.style.display);
-        } else {
-            console.error('Nav menu element not found');
         }
     };
 
+    // Logout function
     window.logout = function () {
-        console.log('Logout called');
         localStorage.removeItem('token');
         window.location.href = 'index.html';
     };
 
-    // Token-based visibility logic
+    // Show/hide profile or auth buttons based on token presence
     const token = localStorage.getItem('token');
     const profileElement = document.querySelector('.profile');
     const authButtons = document.getElementById('authButtons');
     if (token) {
-        console.log('User is logged in, token:', token);
-        if (profileElement) {
-            profileElement.style.display = 'block';
-            console.log('Profile element shown');
-        }
-        if (authButtons) {
-            authButtons.style.display = 'none';
-            console.log('Auth buttons hidden');
-        }
+        if (profileElement) profileElement.style.display = 'block';
+        if (authButtons) authButtons.style.display = 'none';
         const commentForm = document.getElementById('commentForm');
         if (commentForm) commentForm.style.display = 'block';
     } else {
-        console.log('No token found, showing login and signup buttons');
-        if (profileElement) {
-            profileElement.style.display = 'none';
-        }
-        if (authButtons) {
-            authButtons.style.display = 'block';
-        }
+        if (profileElement) profileElement.style.display = 'none';
+        if (authButtons) authButtons.style.display = 'block';
     }
 
-    // Attach event listeners for login/signup
+    // Login button event
     document.getElementById('loginBtn')?.addEventListener('click', () => {
-        console.log('Login button clicked');
         window.location.href = 'login.html';
     });
 
+    // Signup button event
     document.getElementById('signupBtn')?.addEventListener('click', () => {
-        console.log('Signup button clicked');
         window.location.href = 'signup.html';
     });
 
-    // Initialize Quill Editor on create.html
-    if (window.location.pathname.endsWith('create.html')) {
-        if (typeof Quill !== 'undefined') {
-            const quill = new Quill('#editor', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        [{ header: [1, 2, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['link', 'image', 'video'],
-                        [{ list: 'ordered' }, { list: 'bullet' }],
-                        ['clean']
-                    ]
-                }
-            });
-            console.log('Quill editor initialized');
-        } else {
-            console.error('Quill library not loaded');
-        }
+    // Initialize Quill editor on create page
+    if (window.location.pathname.endsWith('create.html') && typeof Quill !== 'undefined') {
+        new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['link', 'image', 'video'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['clean']
+                ]
+            }
+        });
     }
 
-    // Handle Sign Up
+    // Signup form submission
     if (window.location.pathname.endsWith('signup.html')) {
         const signupForm = document.getElementById('signupForm');
         if (signupForm) {
@@ -114,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
-
                 try {
                     const response = await fetch(`${API_URL}/api/signup`, {
                         method: 'POST',
@@ -124,15 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = await response.json();
                     alert(data.message);
                     if (response.status === 201) window.location.href = 'login.html';
-                } catch (error) {
-                    console.error('Error during signup:', error);
-                    alert('Failed to sign up. Check the console for details.');
+                } catch {
+                    alert('Signup failed.');
                 }
             });
         }
     }
 
-    // Handle Login
+    // Login form submission
     if (window.location.pathname.endsWith('login.html')) {
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
@@ -140,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
-
                 try {
                     const response = await fetch(`${API_URL}/api/login`, {
                         method: 'POST',
@@ -154,33 +116,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         alert(data.message);
                     }
-                } catch (error) {
-                    console.error('Error during login:', error);
-                    alert('Failed to log in. Check the console for details.');
+                } catch {
+                    alert('Login failed.');
                 }
             });
         }
     }
 
-    // Handle Create Blog with Quill Content
+    // Create blog form submission
     if (window.location.pathname.endsWith('create.html')) {
         const createBlogForm = document.getElementById('createBlogForm');
         if (createBlogForm) {
             createBlogForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                console.log('Create Blog form submitted');
-
                 const title = document.getElementById('title').value;
                 const category = document.getElementById('category').value;
                 const content = document.querySelector('.ql-editor')?.innerHTML || '';
-
                 const token = localStorage.getItem('token');
                 if (!token) {
-                    alert('No token found. Please log in again.');
+                    alert('Please log in.');
                     window.location.href = 'login.html';
                     return;
                 }
-
                 try {
                     const response = await fetch(`${API_URL}/api/blogs`, {
                         method: 'POST',
@@ -190,41 +147,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         },
                         body: JSON.stringify({ title, category, content })
                     });
-
-                    let data;
-                    try {
-                        data = await response.json();
-                    } catch {
-                        const text = await response.text();
-                        console.error('Expected JSON but got:', text);
-                        alert('Server error or invalid response.');
-                        return;
-                    }
-
+                    const data = await response.json();
                     if (response.status === 403 && data.message === 'Invalid token') {
-                        alert('Your session has expired. Please log in again.');
+                        alert('Session expired. Please log in again.');
                         localStorage.removeItem('token');
                         window.location.href = 'login.html';
                         return;
                     }
-
-                    alert(response.ok ? 'Blog created!' : `Error creating blog: ${data.message || 'Unknown error'}`);
+                    alert(response.ok ? 'Blog created!' : `Error: ${data.message || 'Unknown error'}`);
                     if (response.ok) window.location.href = 'index.html';
-                } catch (error) {
-                    console.error('Error creating blog:', error);
-                    alert('Failed to create blog. Check the console for details.');
+                } catch {
+                    alert('Blog creation failed.');
                 }
             });
         }
     }
 
-    // Fetch and Display Blogs
+    // Fetch and display blogs on index page
     if (window.location.pathname.endsWith('index.html')) {
         window.fetchAndRenderBlogs = async function (category = '') {
             try {
                 const response = await fetch(`${API_URL}/api/blogs${category ? `?category=${category}` : ''}`);
                 const blogs = await response.json();
-                console.log('Fetched Blogs:', blogs);
                 const blogsList = document.getElementById('blogsList');
                 blogsList.innerHTML = blogs.map(blog => `
                     <div class="blog-card">
@@ -237,19 +181,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 `).join('');
-            } catch (error) {
-                console.error('Error fetching blogs:', error);
+            } catch {
+                console.error('Error fetching blogs');
             }
         };
         fetchAndRenderBlogs();
     }
 
-    // Fetch and Display a Single Blog
+    // Fetch and display single blog with comments and replies
     if (window.location.pathname.endsWith('blog.html')) {
         const fetchBlog = async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const blogId = urlParams.get('id');
-
             try {
                 const response = await fetch(`${API_URL}/api/blogs/${blogId}`);
                 const blog = await response.json();
@@ -261,9 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('likeCount').textContent = blog.likes || 0;
 
                 const commentsList = document.getElementById('commentsList');
-                const token = localStorage.getItem('token'); // Check if user is logged in
+                const token = localStorage.getItem('token');
 
-                // Render comments and their replies
                 const renderComments = (comments, parentElement) => {
                     comments.forEach(comment => {
                         const commentElement = document.createElement('div');
@@ -275,145 +217,158 @@ document.addEventListener('DOMContentLoaded', () => {
                             </p>
                             <p class="comment-content">${comment.content}</p>
                             <button class="reply-btn" id="replyBtn-${comment.id}">Reply</button>
-                            <form class="reply-form" id="replyForm-${comment.id}" style="display:none;">
-                                <textarea placeholder="Reply to this comment..." required></textarea>
-                                <button type="submit" class="submit-btn">Reply</button>
-                            </form>
+                            <div class="reply-form-container" id="replyFormContainer-${comment.id}" style="display:none;">
+                                <form class="reply-form" id="replyForm-${comment.id}">
+                                    <textarea placeholder="Write your reply here..." required></textarea>
+                                    <button type="submit">Submit Reply</button>
+                                    <button type="button" class="cancel-reply">Cancel</button>
+                                </form>
+                            </div>
                             <div class="replies"></div>
                         `;
+                        parentElement.appendChild(commentElement);
 
-                        // Add event listener for the "Reply" button
-                        const replyBtn = commentElement.querySelector(`#replyBtn-${comment.id}`);
-                        const replyForm = commentElement.querySelector(`#replyForm-${comment.id}`);
+                        // Recursively render replies
+                        if (comment.replies && comment.replies.length > 0) {
+                            const repliesContainer = commentElement.querySelector('.replies');
+                            renderComments(comment.replies, repliesContainer);
+                        }
+
+                        // Reply button toggle
+                        const replyBtn = commentElement.querySelector('.reply-btn');
+                        const replyFormContainer = commentElement.querySelector('.reply-form-container');
+                        const replyForm = commentElement.querySelector('.reply-form');
+
                         replyBtn.addEventListener('click', () => {
                             if (!token) {
-                                alert('Please log in to reply to comments.');
+                                alert('Please log in to reply.');
                                 window.location.href = 'login.html';
                                 return;
                             }
-                            replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+                            replyFormContainer.style.display = 'block';
                         });
 
-                        // Handle reply form submission
+                        // Cancel reply button
+                        replyForm.querySelector('.cancel-reply').addEventListener('click', () => {
+                            replyFormContainer.style.display = 'none';
+                            replyForm.querySelector('textarea').value = '';
+                        });
+
+                        // Reply submission
                         replyForm.addEventListener('submit', async (e) => {
                             e.preventDefault();
-                            const replyContent = replyForm.querySelector('textarea').value;
-
+                            if (!token) {
+                                alert('Please log in to reply.');
+                                window.location.href = 'login.html';
+                                return;
+                            }
+                            const replyContent = replyForm.querySelector('textarea').value.trim();
+                            if (!replyContent) {
+                                alert('Reply cannot be empty.');
+                                return;
+                            }
                             try {
-                                const response = await fetch(`${API_URL}/api/blogs/${blogId}/comments/reply`, {
+                                const response = await fetch(`${API_URL}/api/blogs/${blogId}/comment/reply`, {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
                                         'Authorization': `Bearer ${token}`
                                     },
-                                    body: JSON.stringify({ content: replyContent, parent_id: comment.id })
+                                    body: JSON.stringify({
+                                        content: replyContent,
+                                        parent_id: comment.id
+                                    })
                                 });
-
-                                let data;
-                                try {
-                                    data = await response.json();
-                                } catch {
-                                    const text = await response.text();
-                                    console.error('Expected JSON but got:', text);
-                                    alert('Server error or invalid response.');
-                                    return;
-                                }
-
-                                alert(data.message);
+                                const data = await response.json();
                                 if (response.ok) {
+                                    alert('Reply added!');
                                     replyForm.querySelector('textarea').value = '';
-                                    replyForm.style.display = 'none';
-                                    fetchBlog(); // Refresh comments
+                                    replyFormContainer.style.display = 'none';
+                                    fetchBlog();
+                                } else {
+                                    alert(`Failed to add reply: ${data.message || 'Unknown error'}`);
                                 }
-                            } catch (error) {
-                                console.error('Error adding reply:', error);
-                                alert('Failed to add reply. Check the console.');
+                            } catch {
+                                alert('Failed to add reply.');
                             }
                         });
-
-                        // Render replies recursively
-                        if (comment.replies && comment.replies.length > 0) {
-                            renderComments(comment.replies, commentElement.querySelector('.replies'));
-                        }
-
-                        parentElement.appendChild(commentElement);
                     });
                 };
 
-                commentsList.innerHTML = ''; // Clear existing comments
+                commentsList.innerHTML = '';
                 renderComments(blog.comments || [], commentsList);
 
-                // Like button handler
-                const likeBtn = document.getElementById('likeBtn');
-                likeBtn.onclick = async () => {
-                    if (!token) {
-                        alert('Please log in to like posts.');
-                        window.location.href = 'login.html';
-                        return;
-                    }
-                    try {
-                        const response = await fetch(`${API_URL}/api/blogs/${blogId}/like`, {
-                            method: 'POST',
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                        const data = await response.json();
-                        alert(data.message);
-                        if (response.ok) fetchBlog();
-                    } catch (error) {
-                        console.error('Error liking blog:', error);
-                    }
-                };
-            } catch (error) {
-                console.error('Error fetching blog:', error);
+                // Comment form submission
+                const commentForm = document.getElementById('commentForm');
+                if (commentForm) {
+                    commentForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        if (!token) {
+                            alert('Please log in to comment.');
+                            window.location.href = 'login.html';
+                            return;
+                        }
+                        const commentContent = commentForm.querySelector('textarea').value.trim();
+                        if (!commentContent) {
+                            alert('Comment cannot be empty.');
+                            return;
+                        }
+                        try {
+                            const response = await fetch(`${API_URL}/api/blogs/${blogId}/comment`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({ content: commentContent })
+                            });
+                            const data = await response.json();
+                            if (response.ok) {
+                                alert('Comment added!');
+                                commentForm.querySelector('textarea').value = '';
+                                fetchBlog();
+                            } else {
+                                alert(`Failed to add comment: ${data.message || 'Unknown error'}`);
+                            }
+                        } catch {
+                            alert('Failed to add comment.');
+                        }
+                    });
+                }
+
+                // Like button click
+                const likeButton = document.getElementById('likeButton');
+                if (likeButton) {
+                    likeButton.addEventListener('click', async () => {
+                        if (!token) {
+                            alert('Please log in to like posts.');
+                            window.location.href = 'login.html';
+                            return;
+                        }
+                        try {
+                            const response = await fetch(`${API_URL}/api/blogs/${blogId}/like`, {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+                            const data = await response.json();
+                            if (response.ok) {
+                                document.getElementById('likeCount').textContent = data.likes;
+                            } else {
+                                alert(data.message || 'Failed to like post.');
+                            }
+                        } catch {
+                            alert('Failed to like post.');
+                        }
+                    });
+                }
+
+            } catch {
+                alert('Failed to load blog.');
             }
         };
 
         fetchBlog();
-
-        // Comment form submission handler
-        document.getElementById('commentForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const urlParams = new URLSearchParams(window.location.search);
-            const blogId = urlParams.get('id');
-            const content = document.getElementById('commentContent').value;
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                alert('Please log in to comment.');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/api/blogs/${blogId}/comments`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ content })
-                });
-
-                let data;
-                try {
-                    data = await response.json();
-                } catch {
-                    const text = await response.text();
-                    console.error('Expected JSON but got:', text);
-                    alert('Server error or invalid response.');
-                    return;
-                }
-
-                alert(data.message || 'Comment added!');
-
-                if (response.ok) {
-                    document.getElementById('commentContent').value = '';
-                    fetchBlog();
-                }
-            } catch (error) {
-                console.error('Error adding comment:', error);
-                alert('Failed to add comment. Check the console.');
-            }
-        });
     }
 });
