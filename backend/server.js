@@ -12,7 +12,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = 'your-secret-key';
 
-// Allowed origins for CORS
 const allowedOrigins = [
   'https://web-blog-afow.vercel.app',
   'https://web-blog-wheat.vercel.app'
@@ -21,7 +20,7 @@ const allowedOrigins = [
 // CORS Middleware
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin) return callback(null, true); // Allow requests with no origin like Postman
+    if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) === -1) {
       return callback(new Error('CORS policy: Origin not allowed'), false);
     }
@@ -32,7 +31,7 @@ app.use(cors({
   credentials: true
 }));
 
-// Preflight OPTIONS request handling for all routes
+// Preflight OPTIONS
 app.options('*', cors({
   origin: function(origin, callback) {
     if (!origin) return callback(null, true);
@@ -48,7 +47,7 @@ app.options('*', cors({
 
 app.use(bodyParser.json({ limit: '100mb' }));
 
-// Configure multer for image uploads
+// File Upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = process.env.NODE_ENV === 'production' 
@@ -63,7 +62,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Serve uploaded images
 app.get('/uploads/:filename', (req, res) => {
   const { filename } = req.params;
   const filePath = process.env.NODE_ENV === 'production' 
@@ -77,7 +75,7 @@ app.get('/uploads/:filename', (req, res) => {
   });
 });
 
-// Postgres Database Setup
+// Database
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false, sslmode: 'require' }
@@ -132,11 +130,9 @@ const initializeDatabase = async () => {
     console.error('Error initializing database:', err);
   }
 };
-
-// Initialize the database
 initializeDatabase();
 
-// Middleware to verify JWT token
+// Auth Middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   if (!authHeader) return res.status(401).json({ message: 'No token provided' });
@@ -153,7 +149,6 @@ const authenticateToken = (req, res, next) => {
 
 // Routes
 
-// Sign Up
 app.post('/api/signup', async (req, res) => {
   const { username, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
@@ -170,15 +165,11 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-// Login
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const result = await pool.query(
-      `SELECT * FROM users WHERE username = $1`,
-      [username]
-    );
+    const result = await pool.query(`SELECT * FROM users WHERE username = $1`, [username]);
     const user = result.rows[0];
     if (!user) return res.status(400).json({ message: 'User not found' });
 
@@ -193,20 +184,16 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Image Upload Endpoint
 app.post('/api/upload-image', authenticateToken, upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
   const imageUrl = `/uploads/${req.file.filename}`;
   res.json({ url: imageUrl });
 });
 
-// Create a Blog Post
 app.post('/api/blogs', authenticateToken, async (req, res) => {
   const { title, content, category } = req.body;
   const author_id = req.user.id;
   const created_at = new Date();
-
-  console.log('Received blog creation request:', { title, content, category, author_id, created_at });
 
   try {
     const result = await pool.query(
@@ -214,15 +201,13 @@ app.post('/api/blogs', authenticateToken, async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
       [title, content, category, author_id, created_at, 0]
     );
-    console.log('Blog created successfully with ID:', result.rows[0].id);
     res.status(201).json({ id: result.rows[0].id });
   } catch (err) {
-    console.error('Error inserting blog into database:', err);
+    console.error('Error inserting blog:', err);
     res.status(500).json({ message: `Error creating blog: ${err.message}` });
   }
 });
 
-// Get All Blogs
 app.get('/api/blogs', async (req, res) => {
   const category = req.query.category;
   let query = `
@@ -249,15 +234,12 @@ app.get('/api/blogs', async (req, res) => {
   }
 });
 
-// Get a Single Blog by ID
 app.get('/api/blogs/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Increment views
     await pool.query(`UPDATE blogs SET views = views + 1 WHERE id = $1`, [id]);
 
-    // Fetch the blog
     const blogResult = await pool.query(
       `SELECT blogs.*, users.username 
        FROM blogs JOIN users ON blogs.author_id = users.id 
@@ -267,13 +249,8 @@ app.get('/api/blogs/:id', async (req, res) => {
     const blog = blogResult.rows[0];
     if (!blog) return res.status(404).json({ message: 'Blog not found' });
 
-    // Fetch likes
-    const likeResult = await pool.query(
-      `SELECT COUNT(*) as likes FROM likes WHERE blog_id = $1`,
-      [id]
-    );
+    const likeResult = await pool.query(`SELECT COUNT(*) as likes FROM likes WHERE blog_id = $1`, [id]);
 
-    // Fetch all comments
     const commentsResult = await pool.query(
       `SELECT comments.*, users.username 
        FROM comments 
@@ -283,14 +260,14 @@ app.get('/api/blogs/:id', async (req, res) => {
       [id]
     );
     const allComments = commentsResult.rows;
-
-    // Build nested comment structure
     const commentsMap = {};
     const topLevelComments = [];
+
     allComments.forEach(comment => {
       comment.replies = [];
       commentsMap[comment.id] = comment;
     });
+
     allComments.forEach(comment => {
       if (comment.parent_id) {
         if (commentsMap[comment.parent_id]) {
@@ -312,13 +289,11 @@ app.get('/api/blogs/:id', async (req, res) => {
   }
 });
 
-// Like a Blog
 app.post('/api/blogs/:id/like', authenticateToken, async (req, res) => {
   const blog_id = req.params.id;
   const user_id = req.user.id;
 
   try {
-    // Check if already liked
     const exists = await pool.query(
       `SELECT * FROM likes WHERE blog_id = $1 AND user_id = $2`,
       [blog_id, user_id]
@@ -338,7 +313,6 @@ app.post('/api/blogs/:id/like', authenticateToken, async (req, res) => {
   }
 });
 
-// Add Comment
 app.post('/api/blogs/:id/comments', authenticateToken, async (req, res) => {
   const blog_id = req.params.id;
   const user_id = req.user.id;
@@ -356,32 +330,47 @@ app.post('/api/blogs/:id/comments', authenticateToken, async (req, res) => {
   }
 });
 
-// Start server
+// ✅ NEW ROUTE: Reply to comment
+app.post('/api/blogs/:id/comments/reply', authenticateToken, async (req, res) => {
+  const blog_id = req.params.id;
+  const user_id = req.user.id;
+  const { content, parent_id } = req.body;
+
+  if (!parent_id) {
+    return res.status(400).json({ message: 'Missing parent comment ID for reply' });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO comments (blog_id, user_id, content, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`,
+      [blog_id, user_id, content, parent_id]
+    );
+    res.status(201).json({ id: result.rows[0].id });
+  } catch (err) {
+    console.error('Error adding reply:', err);
+    res.status(500).json({ message: 'Error adding reply' });
+  }
+});
+
+app.delete('/api/blogs/:id', authenticateToken, async (req, res) => {
+  const blog_id = req.params.id;
+  const user_id = req.user.id;
+
+  try {
+    const result = await pool.query(`SELECT * FROM blogs WHERE id = $1 AND author_id = $2`, [blog_id, user_id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Blog not found or unauthorized' });
+    }
+
+    await pool.query(`DELETE FROM blogs WHERE id = $1`, [blog_id]);
+    res.json({ message: 'Blog deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting blog:', err);
+    res.status(500).json({ message: 'Error deleting blog' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-// Delete a blog post
-app.delete('/api/blogs/:id', authenticateToken, async (req, res) => {
-    const blog_id = req.params.id;
-    const user_id = req.user.id;
-  
-    try {
-      // Check if the blog belongs to the user
-      const result = await pool.query(
-        `SELECT * FROM blogs WHERE id = $1 AND author_id = $2`,
-        [blog_id, user_id]
-      );
-  
-      if (result.rows.length === 0) {
-        return res.status(404).json({ message: 'Blog not found or unauthorized' });
-      }
-  
-      // Delete the blog (comments and likes may need cascading or separate deletion depending on schema)
-      await pool.query(`DELETE FROM blogs WHERE id = $1`, [blog_id]);
-      res.json({ message: 'Blog deleted successfully' });
-    } catch (err) {
-      console.error('Error deleting blog:', err);
-      res.status(500).json({ message: 'Error deleting blog' });
-    }
-  });
-  
