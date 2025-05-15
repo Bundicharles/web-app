@@ -30,17 +30,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Hamburger Menu Toggle
-window.toggleMenu = function () {
-    console.log('toggleMenu called');
-    const navMenu = document.getElementById('navMenu');
-    if (navMenu) {
-        console.log('Nav menu found, current display:', navMenu.style.display);
-        navMenu.style.display = navMenu.style.display === 'block' ? 'none' : 'block';
-        console.log('New display:', navMenu.style.display);
-    } else {
-        console.error('Nav menu element not found');
-    }
-};
+    window.toggleMenu = function () {
+        console.log('toggleMenu called');
+        const navMenu = document.getElementById('navMenu');
+        if (navMenu) {
+            console.log('Nav menu found, current display:', navMenu.style.display);
+            navMenu.style.display = navMenu.style.display === 'block' ? 'none' : 'block';
+            console.log('New display:', navMenu.style.display);
+        } else {
+            console.error('Nav menu element not found');
+        }
+    };
 
     window.logout = function () {
         console.log('Logout called');
@@ -190,7 +190,17 @@ window.toggleMenu = function () {
                         },
                         body: JSON.stringify({ title, category, content })
                     });
-                    const data = await response.json();
+
+                    let data;
+                    try {
+                        data = await response.json();
+                    } catch {
+                        const text = await response.text();
+                        console.error('Expected JSON but got:', text);
+                        alert('Server error or invalid response.');
+                        return;
+                    }
+
                     if (response.status === 403 && data.message === 'Invalid token') {
                         alert('Your session has expired. Please log in again.');
                         localStorage.removeItem('token');
@@ -265,7 +275,7 @@ window.toggleMenu = function () {
                             </p>
                             <p class="comment-content">${comment.content}</p>
                             <button class="reply-btn" id="replyBtn-${comment.id}">Reply</button>
-                            <form class="reply-form" id="replyForm-${comment.id}">
+                            <form class="reply-form" id="replyForm-${comment.id}" style="display:none;">
                                 <textarea placeholder="Reply to this comment..." required></textarea>
                                 <button type="submit" class="submit-btn">Reply</button>
                             </form>
@@ -290,7 +300,7 @@ window.toggleMenu = function () {
                             const replyContent = replyForm.querySelector('textarea').value;
 
                             try {
-                                const response = await fetch(`${API_URL}/api/blogs/${blogId}/comment/reply`, {
+                                const response = await fetch(`${API_URL}/api/blogs/${blogId}/comments/reply`, {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
@@ -298,71 +308,102 @@ window.toggleMenu = function () {
                                     },
                                     body: JSON.stringify({ content: replyContent, parent_id: comment.id })
                                 });
-                                const data = await response.json();
+
+                                let data;
+                                try {
+                                    data = await response.json();
+                                } catch {
+                                    const text = await response.text();
+                                    console.error('Expected JSON but got:', text);
+                                    alert('Server error or invalid response.');
+                                    return;
+                                }
+
                                 alert(data.message);
                                 if (response.ok) {
-                                    replyForm.querySelector('textarea').value = ''; // Clear the textarea
-                                    replyForm.style.display = 'none'; // Hide the form
-                                    fetchBlog(); // Refresh the comments
+                                    replyForm.querySelector('textarea').value = '';
+                                    replyForm.style.display = 'none';
+                                    fetchBlog(); // Refresh comments
                                 }
                             } catch (error) {
                                 console.error('Error adding reply:', error);
-                                alert('Failed to add reply. Check the console for details.');
+                                alert('Failed to add reply. Check the console.');
                             }
                         });
 
-                        // Append the comment to the parent element
-                        parentElement.appendChild(commentElement);
-
-                        // Render replies if they exist
+                        // Render replies recursively
                         if (comment.replies && comment.replies.length > 0) {
-                            const repliesContainer = commentElement.querySelector('.replies');
-                            renderComments(comment.replies, repliesContainer);
+                            renderComments(comment.replies, commentElement.querySelector('.replies'));
                         }
+
+                        parentElement.appendChild(commentElement);
                     });
                 };
 
-                commentsList.innerHTML = '';
-                renderComments(blog.comments, commentsList);
+                commentsList.innerHTML = ''; // Clear existing comments
+                renderComments(blog.comments || [], commentsList);
+
+                // Like button handler
+                const likeBtn = document.getElementById('likeBtn');
+                likeBtn.onclick = async () => {
+                    if (!token) {
+                        alert('Please log in to like posts.');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    try {
+                        const response = await fetch(`${API_URL}/api/blogs/${blogId}/like`, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const data = await response.json();
+                        alert(data.message);
+                        if (response.ok) fetchBlog();
+                    } catch (error) {
+                        console.error('Error liking blog:', error);
+                    }
+                };
             } catch (error) {
                 console.error('Error fetching blog:', error);
             }
         };
+
         fetchBlog();
 
-        document.getElementById('likeBtn')?.addEventListener('click', async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const blogId = urlParams.get('id');
-
-            try {
-                const response = await fetch(`${API_URL}/api/blogs/${blogId}/like`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const data = await response.json();
-                alert(data.message);
-                if (response.ok) fetchBlog();
-            } catch (error) {
-                console.error('Error liking blog:', error);
-            }
-        });
-
+        // Comment form submission handler
         document.getElementById('commentForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const urlParams = new URLSearchParams(window.location.search);
             const blogId = urlParams.get('id');
             const content = document.getElementById('commentContent').value;
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Please log in to comment.');
+                window.location.href = 'login.html';
+                return;
+            }
 
             try {
-                const response = await fetch(`${API_URL}/api/blogs/${blogId}/comment`, {
+                const response = await fetch(`${API_URL}/api/blogs/${blogId}/comments`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ content })
                 });
-                const data = await response.json();
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch {
+                    const text = await response.text();
+                    console.error('Expected JSON but got:', text);
+                    alert('Server error or invalid response.');
+                    return;
+                }
+
                 alert(data.message);
                 if (response.ok) {
                     document.getElementById('commentContent').value = '';
@@ -370,6 +411,7 @@ window.toggleMenu = function () {
                 }
             } catch (error) {
                 console.error('Error adding comment:', error);
+                alert('Failed to add comment. Check the console.');
             }
         });
     }
