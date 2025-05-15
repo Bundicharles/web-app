@@ -360,3 +360,28 @@ app.post('/api/blogs/:id/comments', authenticateToken, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+// Delete a blog post
+app.delete('/api/blogs/:id', authenticateToken, async (req, res) => {
+    const blog_id = req.params.id;
+    const user_id = req.user.id;
+  
+    try {
+      // Check if the blog belongs to the user
+      const result = await pool.query(
+        `SELECT * FROM blogs WHERE id = $1 AND author_id = $2`,
+        [blog_id, user_id]
+      );
+  
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: 'Blog not found or unauthorized' });
+      }
+  
+      // Delete the blog (comments and likes may need cascading or separate deletion depending on schema)
+      await pool.query(`DELETE FROM blogs WHERE id = $1`, [blog_id]);
+      res.json({ message: 'Blog deleted successfully' });
+    } catch (err) {
+      console.error('Error deleting blog:', err);
+      res.status(500).json({ message: 'Error deleting blog' });
+    }
+  });
+  
