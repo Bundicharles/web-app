@@ -404,7 +404,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                alert(comment added);
+                alert(data.message || 'Comment added!');
+
                 if (response.ok) {
                     document.getElementById('commentContent').value = '';
                     fetchBlog();
