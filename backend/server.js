@@ -14,23 +14,20 @@ const SECRET_KEY = 'your-secret-key';
 
 // CORS Middleware Configuration
 app.use(cors({
-    origin: 'https://web-blog-wheat.vercel.app', // Allow frontend domain
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-    credentials: true // Allow credentials (cookies, authorization headers)
+    origin: 'https://web-blog-wheat.vercel.app', // Change this if your frontend is on a different domain
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 
-// Handle preflight requests (CORS)
 app.options('*', cors());
-
-// Middleware
 app.use(bodyParser.json({ limit: '100mb' }));
 
-// Configure multer for image uploads
+// Multer setup
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadPath = process.env.NODE_ENV === 'production' 
-            ? '/tmp/uploads' 
+        const uploadPath = process.env.NODE_ENV === 'production'
+            ? '/tmp/uploads'
             : path.join(__dirname, 'public/uploads');
         if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
         cb(null, uploadPath);
@@ -44,8 +41,8 @@ const upload = multer({ storage });
 // Serve uploaded images
 app.get('/uploads/:filename', (req, res) => {
     const { filename } = req.params;
-    const filePath = process.env.NODE_ENV === 'production' 
-        ? `/tmp/uploads/${filename}` 
+    const filePath = process.env.NODE_ENV === 'production'
+        ? `/tmp/uploads/${filename}`
         : path.join(__dirname, 'public/uploads', filename);
     res.sendFile(filePath, (err) => {
         if (err) {
@@ -55,13 +52,13 @@ app.get('/uploads/:filename', (req, res) => {
     });
 });
 
-// Postgres Database Setup
+// PostgreSQL setup
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false, sslmode: 'require' }
+    ssl: { rejectUnauthorized: false }
 });
 
-// Create tables
+// Initialize DB
 const initializeDatabase = async () => {
     try {
         await pool.query(`
@@ -105,16 +102,14 @@ const initializeDatabase = async () => {
                 FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
             )
         `);
-        console.log('Database tables created successfully');
+        console.log('Database initialized successfully');
     } catch (err) {
         console.error('Error initializing database:', err);
     }
 };
-
-// Initialize the database
 initializeDatabase();
 
-// Middleware to verify JWT token
+// JWT auth middleware
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader) return res.status(401).json({ message: 'No token provided' });
@@ -153,10 +148,7 @@ app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const result = await pool.query(
-            `SELECT * FROM users WHERE username = $1`,
-            [username]
-        );
+        const result = await pool.query(`SELECT * FROM users WHERE username = $1`, [username]);
         const user = result.rows[0];
         if (!user) return res.status(400).json({ message: 'User not found' });
 
@@ -171,14 +163,14 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Image Upload Endpoint
+// Upload image
 app.post('/api/upload-image', authenticateToken, upload.single('image'), (req, res) => {
     if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
     const imageUrl = `/uploads/${req.file.filename}`;
     res.json({ url: imageUrl });
 });
 
-// Create a Blog Post
+// Create blog
 app.post('/api/blogs', authenticateToken, async (req, res) => {
     const { title, content, category } = req.body;
     const author_id = req.user.id;
@@ -192,21 +184,22 @@ app.post('/api/blogs', authenticateToken, async (req, res) => {
         );
         res.status(201).json({ id: result.rows[0].id });
     } catch (err) {
-        console.error('Error inserting blog into database:', err);
-        res.status(500).json({ message: `Error creating blog: ${err.message}` });
+        console.error('Error creating blog:', err);
+        res.status(500).json({ message: 'Error creating blog' });
     }
 });
 
-// Get All Blogs
+// Get all blogs
 app.get('/api/blogs', async (req, res) => {
     const category = req.query.category;
     let query = `
-        SELECT blogs.*, users.username, 
+        SELECT blogs.*, users.username,
         (SELECT COUNT(*) FROM likes WHERE likes.blog_id = blogs.id) as likes,
         (SELECT COUNT(*) FROM comments WHERE comments.blog_id = blogs.id) as comment_count
-        FROM blogs JOIN users ON blogs.author_id = users.id
+        FROM blogs
+        JOIN users ON blogs.author_id = users.id
     `;
-    let params = [];
+    const params = [];
 
     if (category) {
         query += ` WHERE blogs.category = $1`;
@@ -224,44 +217,34 @@ app.get('/api/blogs', async (req, res) => {
     }
 });
 
-// Get a Single Blog by ID
+// Get blog by ID
 app.get('/api/blogs/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        // Increment views
         await pool.query(`UPDATE blogs SET views = views + 1 WHERE id = $1`, [id]);
 
-        // Fetch the blog
         const blogResult = await pool.query(
-            `SELECT blogs.*, users.username 
-             FROM blogs JOIN users ON blogs.author_id = users.id 
-             WHERE blogs.id = $1`,
+            `SELECT blogs.*, users.username FROM blogs 
+             JOIN users ON blogs.author_id = users.id WHERE blogs.id = $1`,
             [id]
         );
         const blog = blogResult.rows[0];
         if (!blog) return res.status(404).json({ message: 'Blog not found' });
 
-        // Fetch likes
-        const likeResult = await pool.query(
-            `SELECT COUNT(*) as likes FROM likes WHERE blog_id = $1`,
-            [id]
-        );
+        const likeResult = await pool.query(`SELECT COUNT(*) as likes FROM likes WHERE blog_id = $1`, [id]);
 
-        // Fetch all comments
         const commentsResult = await pool.query(
-            `SELECT comments.*, users.username 
-             FROM comments 
+            `SELECT comments.*, users.username FROM comments 
              JOIN users ON comments.user_id = users.id 
-             WHERE comments.blog_id = $1 
-             ORDER BY comments.created_at DESC`,
+             WHERE comments.blog_id = $1 ORDER BY comments.created_at DESC`,
             [id]
         );
-        const allComments = commentsResult.rows;
 
-        // Build nested comment structure
+        const allComments = commentsResult.rows;
         const commentsMap = {};
         const topLevelComments = [];
+
         allComments.forEach(comment => {
             comment.replies = [];
             commentsMap[comment.id] = comment;
@@ -285,22 +268,16 @@ app.get('/api/blogs/:id', async (req, res) => {
     }
 });
 
-// Like a Blog
+// Like a blog
 app.post('/api/blogs/:id/like', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const user_id = req.user.id;
 
     try {
-        const likeResult = await pool.query(
-            `SELECT * FROM likes WHERE blog_id = $1 AND user_id = $2`,
-            [id, user_id]
-        );
+        const likeResult = await pool.query(`SELECT * FROM likes WHERE blog_id = $1 AND user_id = $2`, [id, user_id]);
         if (likeResult.rows.length > 0) return res.status(400).json({ message: 'Already liked' });
 
-        await pool.query(
-            `INSERT INTO likes (blog_id, user_id) VALUES ($1, $2)`,
-            [id, user_id]
-        );
+        await pool.query(`INSERT INTO likes (blog_id, user_id) VALUES ($1, $2)`, [id, user_id]);
         res.json({ message: 'Liked' });
     } catch (err) {
         console.error('Error liking blog:', err);
@@ -308,7 +285,7 @@ app.post('/api/blogs/:id/like', authenticateToken, async (req, res) => {
     }
 });
 
-// Comment on a Blog
+// Comment on blog
 app.post('/api/blogs/:id/comment', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { content } = req.body;
@@ -317,8 +294,7 @@ app.post('/api/blogs/:id/comment', authenticateToken, async (req, res) => {
 
     try {
         await pool.query(
-            `INSERT INTO comments (blog_id, user_id, content, created_at) 
-             VALUES ($1, $2, $3, $4)`,
+            `INSERT INTO comments (blog_id, user_id, content, created_at) VALUES ($1, $2, $3, $4)`,
             [id, user_id, content, created_at]
         );
         res.json({ message: 'Comment added' });
@@ -328,7 +304,28 @@ app.post('/api/blogs/:id/comment', authenticateToken, async (req, res) => {
     }
 });
 
-// Start the server
+// ✅ Get blogs by logged-in user
+app.get('/api/user/blogs', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const result = await pool.query(
+            `SELECT blogs.*, users.username,
+            (SELECT COUNT(*) FROM likes WHERE likes.blog_id = blogs.id) as likes,
+            (SELECT COUNT(*) FROM comments WHERE comments.blog_id = blogs.id) as comment_count
+            FROM blogs
+            JOIN users ON blogs.author_id = users.id
+            WHERE author_id = $1
+            ORDER BY created_at DESC`,
+            [userId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching user blogs:', err);
+        res.status(500).json({ message: 'Error fetching user blogs' });
+    }
+});
+
+// Start server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
