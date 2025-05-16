@@ -13,8 +13,8 @@ const PORT = process.env.PORT || 3000;
 const SECRET_KEY = 'your-secret-key';
 
 const allowedOrigins = [
-  'https://web-blog-afow.vercel.app',
-  'https://web-blog-wheat.vercel.app'
+  'https://web-app-five-chi.vercel.app',
+  'https://web-app-o3mf.vercel.app'
 ];
 
 // CORS Middleware

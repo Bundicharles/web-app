@@ -1,4 +1,4 @@
-const API_URL = 'https://web-blog-afow.vercel.app';
+const API_URL = 'web-app-five-chi.vercel.app';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded and script running');
